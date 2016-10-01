@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<meta http-equiv="content-type" content="text/html;charset=utf-8" />
+<canvas width="400" height="400">Error: HTML5 canvas unupported.</canvas><!--Dynamically resize this later-->
+<script>
+  //console.log('hello');
+  var canvas; 
+  var ctx;
+  function hasLocalStorage(){
+    var test = 'test';
+    try{
+      localStorage.setItem(test, test);
+      localStorage.removeItem(test);
+      return true;
+    }catch(e){
+      return false;
+    }
+  }
+  function canvasSupported(){
+    canvas = document.getElementsByTagName("canvas")[0];
+    ctx = canvas.getContext('2d');
+    return( !!(ctx));//document.createElement('canvas').getContext('2d')));
+  }
+  /* function to convert window mouse coordinates to canvas mouse coordinates. */
+  function windowToCanvas(canvas, x,y){
+    var bbox = canvas.getBoundingClientRect();
+    return { x:(x-bbox.left)*(canvas.width/bbox.width),
+	     y:(y-bbox.top) *(canvas.height/bbox.height)};
+  }
+  
+  function setUp(){
+    console.log('setUp');
+    if(!hasLocalStorage()){
+      alert('Error:\nHTML5:localStorage is unavailable.\n\nPlease update your browser to:\n\tChrome version>=4.0,\n\tIE version>=8.0,\n\tFirefox version>=3.5,\n\tSafari version>=4.0,\n\tOpera version>=11.5');
+      return;
+    }
+    if(!canvasSupported()){
+      alert('Error: HTML5 canvas not supported.');
+      return;
+    }
+    console.log('All good.');
+  };
+  setUp();
+  
+  var lastKeyPressed = '';
+  function keyboard_module(onUpdate) {
+  var kb = {};
+  var unicode_mapping = {};
+  document.onkeydown = function(e) {
+    var unicode = e.charCode ? e.charCode : e.keyCode
+    var key = getKey(unicode);
+    if(lastKeyPressed!='' && (lastKeyPressed==key)){
+      return;
+    }lastKeyPressed =key;
+    kb[key] = true;
+    if (onUpdate) {
+      onUpdate(kb);//alert(key);
+    }
+  }
+  document.onkeyup = function(e) {
+    var unicode = e.charCode ? e.charCode : e.keyCode
+    var key = getKey(unicode);
+    lastKeyPressed = '';
+    delete kb[key];
+    if (onUpdate) {
+      onUpdate(kb);
+    }
+  }
+  function getKey(unicode) {
+    if (unicode_mapping[unicode]) {
+      var key = unicode_mapping[unicode];
+    } else {
+      var key = unicode_mapping[unicode] = String.fromCharCode(unicode);
+    }
+    return key;
+  }
+  return kb;
+}
+
+  function testing(kb) {
+    console.log('These keys are down: ', kb); //These keys are down:  Object {S: true} //e.g., for S pressed... 
+  }
+
+  var keyboard = keyboard_module(testing);
+  
+  /* load corporate logo */
+  var logoImg = new Image();
+  logoImg.src = "./uvicSmall.png";
+
+  function frame(){
+    var w = window.innerWidth-20;
+    var h = window.innerHeight-20; 
+    /* set the canvas size dynamically so that the software is device independent and so on... */    
+    canvas.width  = w;
+    canvas.height = h;
+
+    ctx.beginPath();
+    ctx.rect(0, 0, w, h);
+    ctx.fillStyle = 'white';
+    ctx.fill();
+    ctx.lineWidth = 1;
+    ctx.strokeStyle = 'black';
+    ctx.stroke();
+    
+    /* Image scaling approach for logo (right corner) */
+    var lW = logoImg.width; var lH = logoImg.height;
+    var wf = (window.innerWidth-20)/(5. * lW);
+    ctx.drawImage( logoImg, w-(lW*wf),h-(lH*wf),lW*wf, lH*wf);
+  };
+
+  canvas.onmousemove=function(e){
+    frame();  
+    var loc = windowToCanvas(canvas, e.clientX, e.clientY);
+    console.log('x '+(e.clientX).toString()+' y '+(e.clientY).toString()
+		+' cx '+(loc.x).toString()
+		+' cy '+(loc.y).toString()
+      );
+  };
+
+  
+</script>
+</html>
