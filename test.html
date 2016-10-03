@@ -1,0 +1,42 @@
+This is a program to send string 2-ples (ordered pairs) to the server.<br>
+xmit.py is the server side code. 
+<script>
+// progress on transfers from the server to the client (downloads)
+
+
+var formData = new FormData();
+formData.append("username", "Groucho");
+
+var reader  = new FileReader();
+
+//formData.append("message.txt", reader.readAsTextFile( new File("message.txt")));
+var request = new XMLHttpRequest();
+function updateProgress(oEvent){
+  if (oEvent.lengthComputable) {
+    var percentComplete = oEvent.loaded / oEvent.total;
+    // ...
+  } else {
+    // Unable to compute progress information since the total size is unknown
+  }
+}
+
+function transferComplete(evt){
+  //  alert("The transfer is complete."+((Object.keys(evt)).toString()));
+  //	web.uvic.ca says: "The transfer is complete.isTrusted"
+  console.log("File transfer complete. Response text:"+(request.responseText).toString())
+}
+function transferFailed(evt){ alert("Error: an error occurred during file transfer.");}
+function transferCanceled(evt){ alert("Error: transfer cancelled by user.");}
+function loadEnd(e){console.log("Transfer done (this hook doesn't know status).");}
+request.addEventListener("progress", updateProgress);
+request.addEventListener("load", transferComplete);
+request.addEventListener("error", transferFailed);
+request.addEventListener("abort", transferCanceled);
+request.addEventListener("loadend", loadEnd);
+
+//needs to have http:// in front, and needs to be on same domain:
+//http://stackoverflow.com/questions/20035101/no-access-control-allow-origin-header-is-present-on-the-requested-resource
+request.open("POST", "http://web.uvic.ca/~ashy/memory/xmit.py");
+request.send(formData);//new FormData(formElement));
+//alert("end of script.");
+</script>
