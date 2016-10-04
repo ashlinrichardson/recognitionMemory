@@ -118,60 +118,6 @@ var offsetX,offsetY;
 reOffset();
 
 
-
-function drawUp(transX,transY, reverseDirection){
-  //ctx.translate(transX,transY);
-  var bSet = makeBeziers(1.);
-  var tx  = transX; 
-  var ty  = transY;
-  if( reverseDirection==true){
-    for(var i=bSet.length-1; i>=0; i--){
-      var b=bSet[i];
-      ctx.bezierCurveTo(b.ex+tx,b.ey+ty,b.cx2+tx,b.cy2+ty,b.cx1+tx,b.cy1+ty);
-    }
-  }else{
-    for(var i=0;i<bSet.length;i++){
-      var b=bSet[i];
-      ctx.bezierCurveTo(b.cx1+tx,b.cy1+ty,b.cx2+tx,b.cy2+ty,b.ex+tx,b.ey+ty);
-    }
-  }
-}
-function drawLine(x,y,u,v){ //ctx.beginPath(); 
-  ctx.moveTo(x,y);  
-  ctx.lineTo(u,v); //ctx.closePath(); //ctx.stroke();
-}
-
-/* Draw a puzzle piece that only can have vertical connections. */
-function draw(transX, transY){
-  ctx.lineWidth=0.5;
-  ctx.strokeStyle='blue';
-  ctx.fillColor = 'blue';
-  var sizeP = 100; 
-  var pp = 15;
-  sizeP = 100-pp;
-  /* Draw the shape (without edges). */
-  ctx.beginPath();
-  drawLine(  transX, transY+sizeP+pp,transX, transY+pp);
-  drawUp(transX, transY, false);
-  drawLine(  transX+100, transY+pp, transX+100, transY+sizeP+pp);
-  drawUp(transX, transY+sizeP, true);//false);
-  ctx.setTransform(1,0,0,1,0,0);
-  ctx.closePath();
-  ctx.fillStyle = '#8ED6FF';
-  ctx.fill();
-  
-  /* draw the picking area.. MAYBE only draw this when the piece is highlighted!!! */
-  ctx.beginPath();
-  drawLine(  transX, transY+sizeP+pp,   transX, transY+pp);
-  drawLine(     transX, transY+pp,transX+100, transY+pp);
-  drawLine(  transX+100, transY+pp, transX+100, transY+sizeP+pp);
-  drawLine(  transX+100, transY+sizeP+pp,transX, transY+sizeP+pp);
-  ctx.closePath();
-  ctx.strokeStyle='cyan';
-  ctx.stroke();
-
-}
-
 function makeBeziers(s){
   var ret = ([
     {cx1:0,  cy1:15,  cx2:35,cy2:15, ex:37, ey:5},   // left shoulder
@@ -192,14 +138,104 @@ function makeBeziers(s){
   return ret;
 }
 
-function drawPuzzlePiece(x,y){ /* need to add color, scaling, and position, and text, etc... */
-  draw(x,y);//50,100);
+
+function drawUp(transX,transY, reverseDirection, pw){
+  //ctx.translate(transX,transY);
+  var bSet = makeBeziers(1.*(pw/100.));
+  var tx  = transX; 
+  var ty  = transY;
+  if( reverseDirection==true){
+    for(var i=bSet.length-1; i>=0; i--){
+      var b=bSet[i];
+      ctx.bezierCurveTo(b.ex+tx,b.ey+ty,b.cx2+tx,b.cy2+ty,b.cx1+tx,b.cy1+ty);
+    }
+  }else{
+    for(var i=0;i<bSet.length;i++){
+      var b=bSet[i];
+      ctx.bezierCurveTo(b.cx1+tx,b.cy1+ty,b.cx2+tx,b.cy2+ty,b.ex+tx,b.ey+ty);
+    }
+  }
+}
+function drawLine(x,y,u,v){ //ctx.beginPath(); 
+  ctx.moveTo(x,y);  
+  ctx.lineTo(u,v); //ctx.closePath(); //ctx.stroke();
 }
 
-function drawGrid(cw, ch){
+/* Draw a puzzle piece that only can have vertical connections. */
+function draw(transX,transY, /* <-translation offset.. */ pw,ph /* <-puzzle piece dims..*/ ){ 
   ctx.lineWidth=0.5;
+  ctx.strokeStyle='blue';
+  var sizeP = ph;//100; 
+  var pp = 15 * (100./pw);
+  //sizeP = 100-pp;
+  /* Draw the shape (without edges). */
+  ctx.beginPath();
+  drawLine(  transX, transY+sizeP+pp,transX, transY+pp);
+  drawUp(transX, transY, false, pw);
+  drawLine(  transX+pw, transY+pp, transX+pw, transY+sizeP+pp);
+  drawUp(transX, transY+sizeP, true, pw);//false);
+  ctx.setTransform(1,0,0,1,0,0);
+  ctx.closePath();
+  ctx.fillStyle ='#8ED6FF';
+  ctx.fill();
+  
+  /* draw the picking area.. MAYBE only draw this when the piece is highlighted!!! */
+  ctx.beginPath();
+  drawLine(  transX, transY+sizeP+pp,   transX, transY+pp);
+  drawLine(     transX, transY+pp,transX+pw, transY+pp);
+  drawLine(  transX+pw, transY+pp, transX+pw, transY+sizeP+pp);
+  drawLine(  transX+pw, transY+sizeP+pp,transX, transY+sizeP+pp);
+  ctx.closePath();
   ctx.strokeStyle='green';
+  ctx.stroke();
 
+}
+
+
+var gridContent = { } ;
+
+function drawGrid(cw, ch){
+  var v = 36;
+  ctx.globalAlpha = 0.5;
+  ctx.lineWidth=1;
+  ctx.strokeStyle='blue';
+  ctx.setLineDash([5, 15]);
+  for( var i=0; i<cw/100; i++){
+    drawLine( i * 100, 0+v, i*100, ch+v);    ctx.stroke();
+  }
+  for(var j=0; j<ch/100; j++){
+    drawLine(0, j*100+v, cw, j*100+v);     ctx.stroke();
+  }
+  
+  for( var i =0; i<=cw/100; i++){
+    for(var j=0; j<=ch/100; j++){
+      var cI = i.toString()+','+j.toString();
+      if( cI in gridContent){
+      }else{
+	if( i%2==0 || j%2==0){
+	  gridContent[cI]=1;
+	}else{
+	  gridContent[cI]=0;
+	}
+      }
+    }
+  }
+ ctx.globalAlpha = 1.;
+
+}
+
+function drawGridContent(){
+  for( var i =0; i<=cw/100; i++){
+    for(var j=0; j<=ch/100; j++){
+      var cI = i.toString()+','+j.toString();
+      if( cI in gridContent){
+	if(gridContent[cI]==1){
+	      draw(0 + 100*i,21 + 100*j, 100,100);
+	      //draw(mx, my, 100, 100);
+	}
+      }
+    }
+  }
 }
 
 //----------------------------------------------
@@ -217,11 +253,12 @@ function drawGrid(cw, ch){
   function frame(){
     document.bgColor = "#FFFFFF"; //"#000000"
 
-    var w = window.innerWidth-20;
-    var h = window.innerHeight-20; 
+    var w = 800;//window.innerWidth-20;
+    var h = 800;//window.innerHeight-20; 
     /* set the canvas size dynamically so that the software is device independent and so on... */    
     canvas.width  = w;
     canvas.height = h;
+
 
     ctx.beginPath();
     ctx.rect(0, 0, w, h);
@@ -232,13 +269,16 @@ function drawGrid(cw, ch){
     ctx.stroke();
     
     /* Image scaling approach for logo (right corner) */
+    ctx.save();
+ctx.globalAlpha = 1.0;
     var lW = logoImg.width; var lH = logoImg.height;
     var wf = (window.innerWidth-20)/(5. * lW);
     ctx.drawImage( logoImg, w-(lW*wf),h-(lH*wf),lW*wf, lH*wf);
+
+ctx.restore();
     
-    
-    draw(50,100);
-    drawPuzzlePiece(mx, my);
+    drawGrid(w,h);
+    drawGridContent();
   
     /*loop profiling section */
     var t2 = window.performance.now()
@@ -276,11 +316,15 @@ function drawGrid(cw, ch){
     //frame();  
     
     var loc = windowToCanvas(canvas, e.clientX, e.clientY);
-    mx = loc.x;
-    my = loc.y;
+    /*mx = loc.x;
+    my = loc.y;*/
     console.log('x '+(e.clientX).toString()+' y '+(e.clientY).toString()
 		+' cx '+(loc.x).toString()
 		+' cy '+(loc.y).toString()
+		+' i  '+Math.floor(loc.x / 100).toString()
+		+' j  '+Math.floor(loc.y / 100).toString()
+		/*+' cw '+canvas.width.toString()
+		+' ch '+canvas.height.toString()*/
       );
   };
 
