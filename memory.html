@@ -2,10 +2,9 @@
 <meta http-equiv="content-type" content="text/html;charset=utf-8" />
 <canvas width="400" height="400">Error: HTML5 canvas unupported.</canvas><!--Dynamically resize this later-->
 <script>
-  //console.log('hello');
-  var canvas; 
-  var ctx;
-  function hasLocalStorage(){
+
+  /* check if localStorage is supported.. */
+  function hasLocalStorage(){ 
     var test = 'test';
     try{
       localStorage.setItem(test, test);
@@ -15,78 +14,206 @@
       return false;
     }
   }
+  
+  /* keep hooks to our html5 canvas, and canvas.context.. */
+  var canvas, ctx; 
+
+  /* check if html5-canvas is supported.. */
   function canvasSupported(){
     canvas = document.getElementsByTagName("canvas")[0];
     ctx = canvas.getContext('2d');
-    return( !!(ctx));//document.createElement('canvas').getContext('2d')));
+    return( !!(ctx));
   }
-  /* function to convert window mouse coordinates to canvas mouse coordinates. */
-  function windowToCanvas(canvas, x,y){
-    var bbox = canvas.getBoundingClientRect();
-    return { x:(x-bbox.left)*(canvas.width/bbox.width),
-	     y:(y-bbox.top) *(canvas.height/bbox.height)};
-  }
-  
-  function setUp(){
-    console.log('setUp');
+   
+  /* check that the prerequisites are satisfied, and set up the canvas.. */ 
+  function init(){
+    console.log('checking prerequisites..');
     if(!hasLocalStorage()){
-      alert('Error:\nHTML5:localStorage is unavailable.\n\nPlease update your browser to:\n\tChrome version>=4.0,\n\tIE version>=8.0,\n\tFirefox version>=3.5,\n\tSafari version>=4.0,\n\tOpera version>=11.5');
+      alert('Error:\nHTML5:localStorage unavailable.\n\nUpdate your browser to:\n\tChrome v.>=4.0,\n\tIE v.>=8.0,\n\tFirefox v.>=3.5,\n\tSafari v.>=4.0,\n\tOpera v.>=11.5');
       return;
     }
     if(!canvasSupported()){
-      alert('Error: HTML5 canvas not supported.');
+      alert('Error: HTML5 canvas not supported. Please update your browser.');
       return;
     }
-    console.log('All good.');
+    console.log('prerequisites seem to be ok..');
   };
-  setUp();
-  
-  var lastKeyPressed = '';
-  function keyboard_module(onUpdate) {
-  var kb = {};
-  var unicode_mapping = {};
-  document.onkeydown = function(e) {
-    var unicode = e.charCode ? e.charCode : e.keyCode
-    var key = getKey(unicode);
-    if(lastKeyPressed!='' && (lastKeyPressed==key)){
-      return;
-    }lastKeyPressed =key;
-    kb[key] = true;
-    if (onUpdate) {
-      onUpdate(kb);//alert(key);
-    }
-  }
-  document.onkeyup = function(e) {
-    var unicode = e.charCode ? e.charCode : e.keyCode
-    var key = getKey(unicode);
-    lastKeyPressed = '';
-    delete kb[key];
-    if (onUpdate) {
-      onUpdate(kb);
-    }
-  }
-  function getKey(unicode) {
-    if (unicode_mapping[unicode]) {
-      var key = unicode_mapping[unicode];
-    } else {
-      var key = unicode_mapping[unicode] = String.fromCharCode(unicode);
-    }
-    return key;
-  }
-  return kb;
-}
 
+  /* don't pass go without the canvas and localStorage.. */
+  init();
+  
+  /* set up keyboard handlers, and keyboard state variables.. */
+  var lastKeyPressed = ''; //track the last key pressed (onkeydown).. 
+  function keyboard_module(onUpdate) {
+    var kb = {};
+    var unicode_mapping = {};
+    /* handler for key down event.. override automatic key repeats!*/
+    document.onkeydown = function(e) {
+      var unicode = e.charCode ? e.charCode : e.keyCode
+      var key = getKey(unicode);
+      if(lastKeyPressed!='' && (lastKeyPressed==key)){
+        return;
+      }lastKeyPressed =key;
+      kb[key] = true;
+      if (onUpdate) {
+        onUpdate(kb);//alert(key);
+      }
+    }
+    /* handler for key up event.. */
+    document.onkeyup = function(e) {
+      var unicode = e.charCode ? e.charCode : e.keyCode
+      var key = getKey(unicode);
+      lastKeyPressed = '';
+      delete kb[key];
+      if (onUpdate) {
+        onUpdate(kb);
+      }
+    }
+    /* function to check the keyboard state.. */
+    function getKey(unicode) {
+      if (unicode_mapping[unicode]) {
+        var key = unicode_mapping[unicode];
+      } else {
+        var key = unicode_mapping[unicode] = String.fromCharCode(unicode);
+      }
+      return key;
+    }
+    return kb;
+  }/* function keyboard_module(onUpdate).. keyboard handler..  */
+
+  /* by default, log which keys are currently down.. */
   function testing(kb) {
     console.log('These keys are down: ', kb); //These keys are down:  Object {S: true} //e.g., for S pressed... 
   }
 
+  /* set up the keyboard event handling scheme above.. */
   var keyboard = keyboard_module(testing);
   
   /* load corporate logo */
-  var logoImg = new Image();
-  logoImg.src = "./uvicSmall.png";
+  var logoImg = new Image();  logoImg.src = "./uvicSmall.png";
 
+  /* function to convert window mouse coordinates to canvas mouse coordinates. */
+  function windowToCanvas(canvas, x,y){
+    var bbox = canvas.getBoundingClientRect();
+    return { x:(x-bbox.left)*(canvas.width/bbox.width),
+       y:(y-bbox.top) *(canvas.height/bbox.height)};
+    /*  
+      //Example use of windowToCanvas:  
+        canvas.onmousemove=function(e){
+          var loc = windowToCanvas(canvas, e.clientX, e.clientY);
+        };
+      //End example..
+    */
+  }
+  
+  //----------------------------------------------------------------------------
+var cw=canvas.width;
+var ch=canvas.height;
+function reOffset(){
+  var BB=canvas.getBoundingClientRect();
+  offsetX=BB.left;
+  offsetY=BB.top;        
+}
+var offsetX,offsetY;
+reOffset();
+
+
+
+var bSet=makeBeziers();
+function drawUp(bSet,transX,transY, reverseDirection){
+  //ctx.translate(transX,transY);
+  var tx  = transX; 
+  var ty  = transY;
+  if( reverseDirection==true){
+    for(var i=bSet.length-1; i>=0;i--){
+      var b=bSet[i];
+      ctx.bezierCurveTo(b.cx1+tx,b.cy1+ty,b.cx2+tx,b.cy2+ty,b.ex+tx,b.ey+ty);
+    }
+  }else{
+    for(var i=0;i<bSet.length;i++){
+      var b=bSet[i];
+      ctx.bezierCurveTo(b.cx1+tx,b.cy1+ty,b.cx2+tx,b.cy2+ty,b.ex+tx,b.ey+ty);
+    }
+  }
+}
+function drawLine(x,y,u,v){
+  //ctx.beginPath(); 
+  ctx.moveTo(x,y);  
+  ctx.lineTo(u,v);
+  //ctx.closePath();
+  //ctx.stroke();
+}
+function draw(bSet, transX, transY){
+  ctx.strokeStyle='blue';
+  ctx.fillColor = 'blue';
+  var sizeP = 67; 
+
+  ctx.beginPath();
+
+  drawLine(  transX, transY+sizeP+15,transX, transY+15);
+  drawUp(bSet, transX, transY, false);
+  drawLine(  transX+100, transY+15, transX+100, transY+sizeP+15);
+  
+  ctx.setTransform(1,0,0,1,0,0);
+  ctx.scale(-1, 1);
+  drawUp(bSet,-3.*transX, transY+sizeP, false);
+  ctx.setTransform(1,0,0,1,0,0);
+  ctx.closePath();
+  ctx.fillStyle = '#8ED6FF';
+  ctx.fill();
+  
+  ctx.beginPath();
+  ctx.setTransform(1,0,0,1,0,0);
+  ctx.scale(-1, 1);
+  drawUp(bSet,-3.*transX, transY+sizeP, false);
+  ctx.setTransform(1,0,0,1,0,0);
+  ctx.fillStyle = 'white';//#8ED6FF';
+  ctx.closePath();
+  drawLine(transX+100, transY+15,transX+100, transY+sizeP+15);
+  ctx.fill();
+  
+  ctx.beginPath();
+  drawLine(  transX, transY+sizeP+15,transX, transY+15);
+  drawUp(bSet, transX, transY, false);
+  drawLine(  transX+100, transY+15, transX+100, transY+sizeP+15);
+  ctx.closePath(); 
+  ctx.stroke(); 
+ 
+  ctx.beginPath();
+  ctx.setTransform(1,0,0,1,0,0);
+  ctx.scale(-1, 1);
+  drawUp(bSet,-3.*transX, transY+sizeP, false);
+  ctx.setTransform(1,0,0,1,0,0);
+  drawLine(  transX+100, transY+15, transX+100, transY+sizeP+15);
+  ctx.closePath();
+  ctx.strokeStyle = 'blue';//white'; 
+  ctx.stroke();
+
+}
+
+function makeBeziers(){
+  return([
+    {cx1:0,  cy1:15,  cx2:35,cy2:15, ex:37, ey:5},   // left shoulder
+    {cx1:37, cy1:5,  cx2:40,cy2:0,  ex:38, ey:-5},  // left neck
+    {cx1:38, cy1:-5, cx2:20,cy2:-20,ex:50, ey:-20}, // left head
+    {cx1:50, cy1:-20,cx2:80,cy2:-20,ex:62, ey:-5},  // right head
+    {cx1:62, cy1:-5, cx2:60,cy2:0,  ex:63, ey:5},   // right neck
+    {cx1:63, cy1:5,  cx2:65,cy2:15, ex:100,ey:15},   // right shoulder
+  ]);
+}
+
+//----------------------------------------------
+
+ /* Global variables to track animation loop.. */
+  var i=0; //loop iteration counter. 
+  var movingAverage = 0.; //moving average for fps calc... 
+  var t0 = window.performance.now(); //start time..
+  var t2 = 0; var t1=t0; //times used in loop..
+
+  /* function to execute, animation loop.. */
   function frame(){
+    document.bgColor = "#FFFFFF"; //"#000000"
+
     var w = window.innerWidth-20;
     var h = window.innerHeight-20; 
     /* set the canvas size dynamically so that the software is device independent and so on... */    
@@ -105,10 +232,45 @@
     var lW = logoImg.width; var lH = logoImg.height;
     var wf = (window.innerWidth-20)/(5. * lW);
     ctx.drawImage( logoImg, w-(lW*wf),h-(lH*wf),lW*wf, lH*wf);
+    
+    
+    draw(bSet,50,100);
+    
+  
+    /*loop profiling section */
+    var t2 = window.performance.now()
+    if( i==1){
+      movingAverage = t1 - t0;
+    }else{
+      movingAverage = (movingAverage +(t2-t1))/2.;
+    }
+    t1 = t2; 
+    if (i % 1000 == 0) {
+      console.log(movingAverage.toString().concat(" mS = ").concat((1. / (movingAverage / 1000.))).concat(" fpS"));
+    }
+    /* Total time elapsed since start.. */
+    var timeElapsed = Math.ceil(( t1-t0)/1000.);  i += 1;
+    if(false){
+      /* print out DOM element names... */
+      var all = document.getElementsByTagName("*");
+      for (var i=0, max=all.length; i < max; i++) {
+	// Do something with the element here	
+	console.log( all[i].toString() + ' i='+ i.toString());
+      }
+
+      var currentNode,
+      ni = document.createNodeIterator(document.documentElement, NodeFilter.SHOW_ELEMENT);
+
+      while(currentNode = ni.nextNode()) {
+	console.log(currentNode.nodeName);
+      }
+    }
   };
 
+
+
   canvas.onmousemove=function(e){
-    frame();  
+    //frame();  
     var loc = windowToCanvas(canvas, e.clientX, e.clientY);
     console.log('x '+(e.clientX).toString()+' y '+(e.clientY).toString()
 		+' cx '+(loc.x).toString()
@@ -116,6 +278,7 @@
       );
   };
 
+  var id = setInterval(frame, 100);  //might reduce this number to decrease latency.. 
   
 </script>
 </html>
