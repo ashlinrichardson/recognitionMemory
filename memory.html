@@ -136,24 +136,25 @@ function drawUp(bSet,transX,transY, reverseDirection){
     }
   }
 }
-function drawLine(x,y,u,v){
-  //ctx.beginPath(); 
+function drawLine(x,y,u,v){ //ctx.beginPath(); 
   ctx.moveTo(x,y);  
-  ctx.lineTo(u,v);
-  //ctx.closePath();
-  //ctx.stroke();
+  ctx.lineTo(u,v); //ctx.closePath(); //ctx.stroke();
 }
+
+/* Draw a puzzle piece that only can have vertical connections. */
 function draw(bSet, transX, transY){
+  /* Regrettably, this implementation is slightly redundant because 
+      we had some problems filling a non-convex shape.  
+  */
   ctx.strokeStyle='blue';
   ctx.fillColor = 'blue';
   var sizeP = 67; 
 
+  /* Draw the shape (without edges). */
   ctx.beginPath();
-
   drawLine(  transX, transY+sizeP+15,transX, transY+15);
   drawUp(bSet, transX, transY, false);
-  drawLine(  transX+100, transY+15, transX+100, transY+sizeP+15);
-  
+  drawLine(  transX+100, transY+15, transX+100, transY+sizeP+15); 
   ctx.setTransform(1,0,0,1,0,0);
   ctx.scale(-1, 1);
   drawUp(bSet,-3.*transX, transY+sizeP, false);
@@ -162,23 +163,15 @@ function draw(bSet, transX, transY){
   ctx.fillStyle = '#8ED6FF';
   ctx.fill();
   
-  ctx.beginPath();
-  ctx.setTransform(1,0,0,1,0,0);
-  ctx.scale(-1, 1);
-  drawUp(bSet,-3.*transX, transY+sizeP, false);
-  ctx.setTransform(1,0,0,1,0,0);
-  ctx.fillStyle = 'white';//#8ED6FF';
-  ctx.closePath();
-  drawLine(transX+100, transY+15,transX+100, transY+sizeP+15);
-  ctx.fill();
-  
+  /* Draw the border (except the bottom edge). */
   ctx.beginPath();
   drawLine(  transX, transY+sizeP+15,transX, transY+15);
   drawUp(bSet, transX, transY, false);
   drawLine(  transX+100, transY+15, transX+100, transY+sizeP+15);
   ctx.closePath(); 
   ctx.stroke(); 
- 
+
+  /* Draw the border for the bottom edge. */
   ctx.beginPath();
   ctx.setTransform(1,0,0,1,0,0);
   ctx.scale(-1, 1);
@@ -188,6 +181,7 @@ function draw(bSet, transX, transY){
   ctx.closePath();
   ctx.strokeStyle = 'blue';//white'; 
   ctx.stroke();
+
 
 }
 
