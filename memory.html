@@ -1,8 +1,13 @@
 <!DOCTYPE html>
+<head>
+<link rel="stylesheet" href="main.css">
+</head>
 <meta http-equiv="content-type" content="text/html;charset=utf-8" />
-<canvas width="800" height="800">Error: HTML5 canvas unupported.</canvas><!--Dynamically resize this later?-->
+<canvas id="canvasID" width="800" height="800">Error: HTML5 canvas unupported.</canvas><!--Dynamically resize this later?-->
 <script>
 
+
+  
   var plopSound = new Audio('plop.mp3'); //  plopSound.play();
   /* check if localStorage is supported.. */
   function hasLocalStorage(){ 
@@ -42,6 +47,43 @@
 
   /* don't pass go without the canvas and localStorage.. */
   init();
+  var invColor;
+  var img = new Image(); 
+  img.src = 'UVIC-Aerial.jpg';
+  var avgColor = [0.,0.,0.];
+  img.onload = function() {
+    ctx.width = img.width;
+    ctx.height = img.height;
+    ctx.drawImage(img, 0, 0);
+    var imageData = ctx.getImageData(0, 0, img.width, img.height);
+    var pix = imageData.data;
+    var nn = 0;	
+    for (var i = 0; i < pix.length; i+=4) {
+      if( i%10000==0){
+	var r = 1.*pix[i  ];
+	var g = 1.*pix[i+1]; 
+	var b = 1.*pix[i+2];
+	avgColor[0]+=r; avgColor[1]+=g; avgColor[2]+=b; 
+	nn+=1.;
+	//console.log(r,g,b); 
+      }
+      // i+3 is alpha (the fourth element)
+    }
+    avgColor[0]/=nn;avgColor[1]/=nn; avgColor[2]/=nn;
+    //console.log(pix.length); //console.log( avgColor[0] , avgColor[1], avgColor[2]);
+    invColor = "rgb(" 
+		+(255-Math.floor(avgColor[0])).toString()
+		+ ","
+		+(255-Math.floor(avgColor[1])).toString()
+		+","
+		+(255-Math.floor(avgColor[2])).toString()
+		+")"; 
+  }
+  
+
+  ctx.width = 800; 
+  ctx.height=800; 
+
   
   /* set up keyboard handlers, and keyboard state variables.. */
   var lastKeyPressed = ''; //track the last key pressed (onkeydown).. 
@@ -177,7 +219,7 @@ function draw(transX,transY, /* <-translation offset.. */ pw,ph /* <-puzzle piec
   drawUp(transX, transY+sizeP, true, pw);//false);
   ctx.setTransform(1,0,0,1,0,0);
   ctx.closePath();
-  ctx.fillStyle ='#8ED6FF';
+  ctx.fillStyle =invColor;//'#8ED6FF';
   ctx.fill();
   
   /* draw the picking area.. MAYBE only draw this when the piece is highlighted!!! */
@@ -257,7 +299,7 @@ function drawGridContent(){
 
   /* function to execute, animation loop.. */
   function frame(){
-    document.bgColor = "#FFFFFF"; //"#000000"
+    //document.bgColor = "#FFFFFF"; //"#000000"
 
     var w = 800;//window.innerWidth-20;
     var h = 800;//window.innerHeight-20; 
