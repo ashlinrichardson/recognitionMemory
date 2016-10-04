@@ -119,9 +119,9 @@ reOffset();
 
 
 
-var bSet=makeBeziers();
-function drawUp(bSet,transX,transY, reverseDirection){
+function drawUp(transX,transY, reverseDirection){
   //ctx.translate(transX,transY);
+  var bSet = makeBeziers(1.);
   var tx  = transX; 
   var ty  = transY;
   if( reverseDirection==true){
@@ -142,26 +142,38 @@ function drawLine(x,y,u,v){ //ctx.beginPath();
 }
 
 /* Draw a puzzle piece that only can have vertical connections. */
-function draw(bSet, transX, transY){
+function draw(transX, transY){
+  ctx.lineWidth=0.5;
   ctx.strokeStyle='blue';
   ctx.fillColor = 'blue';
-  var sizeP = 67; 
-  
+  var sizeP = 100; 
+  var pp = 15;
+  sizeP = 100-pp;
   /* Draw the shape (without edges). */
   ctx.beginPath();
-  drawLine(  transX, transY+sizeP+15,transX, transY+15);
-  drawUp(bSet, transX, transY, false);
-  drawLine(  transX+100, transY+15, transX+100, transY+sizeP+15);
-  drawUp(bSet, transX, transY+sizeP, true);//false);
+  drawLine(  transX, transY+sizeP+pp,transX, transY+pp);
+  drawUp(transX, transY, false);
+  drawLine(  transX+100, transY+pp, transX+100, transY+sizeP+pp);
+  drawUp(transX, transY+sizeP, true);//false);
   ctx.setTransform(1,0,0,1,0,0);
   ctx.closePath();
   ctx.fillStyle = '#8ED6FF';
   ctx.fill();
+  
+  /* draw the picking area.. MAYBE only draw this when the piece is highlighted!!! */
+  ctx.beginPath();
+  drawLine(  transX, transY+sizeP+pp,   transX, transY+pp);
+  drawLine(     transX, transY+pp,transX+100, transY+pp);
+  drawLine(  transX+100, transY+pp, transX+100, transY+sizeP+pp);
+  drawLine(  transX+100, transY+sizeP+pp,transX, transY+sizeP+pp);
+  ctx.closePath();
+  ctx.strokeStyle='cyan';
+  ctx.stroke();
 
 }
 
-function makeBeziers(){
-  return([
+function makeBeziers(s){
+  var ret = ([
     {cx1:0,  cy1:15,  cx2:35,cy2:15, ex:37, ey:5},   // left shoulder
     {cx1:37, cy1:5,  cx2:40,cy2:0,  ex:38, ey:-5},  // left neck
     {cx1:38, cy1:-5, cx2:20,cy2:-20,ex:50, ey:-20}, // left head
@@ -169,10 +181,25 @@ function makeBeziers(){
     {cx1:62, cy1:-5, cx2:60,cy2:0,  ex:63, ey:5},   // right neck
     {cx1:63, cy1:5,  cx2:65,cy2:15, ex:100,ey:15},   // right shoulder
   ]);
+  for( var i = 0; i<ret.length; i++){
+     ret[i].cx1*=s;
+     ret[i].cx2*=s;
+     ret[i].cy1*=s;
+     ret[i].cy2*=s;
+     ret[i].ex*=s;
+     ret[i].ey*=s;
+  }
+  return ret;
 }
 
-function drawPuzzlePiece(x,y){
-  draw(bSet,x,y);//50,100);
+function drawPuzzlePiece(x,y){ /* need to add color, scaling, and position, and text, etc... */
+  draw(x,y);//50,100);
+}
+
+function drawGrid(cw, ch){
+  ctx.lineWidth=0.5;
+  ctx.strokeStyle='green';
+
 }
 
 //----------------------------------------------
@@ -210,7 +237,7 @@ function drawPuzzlePiece(x,y){
     ctx.drawImage( logoImg, w-(lW*wf),h-(lH*wf),lW*wf, lH*wf);
     
     
-    draw(bSet,50,100);
+    draw(50,100);
     drawPuzzlePiece(mx, my);
   
     /*loop profiling section */
