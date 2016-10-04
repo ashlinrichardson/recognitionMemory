@@ -125,9 +125,9 @@ function drawUp(bSet,transX,transY, reverseDirection){
   var tx  = transX; 
   var ty  = transY;
   if( reverseDirection==true){
-    for(var i=bSet.length-1; i>=0;i--){
+    for(var i=bSet.length-1; i>=0; i--){
       var b=bSet[i];
-      ctx.bezierCurveTo(b.cx1+tx,b.cy1+ty,b.cx2+tx,b.cy2+ty,b.ex+tx,b.ey+ty);
+      ctx.bezierCurveTo(b.ex+tx,b.ey+ty,b.cx2+tx,b.cy2+ty,b.cx1+tx,b.cy1+ty);
     }
   }else{
     for(var i=0;i<bSet.length;i++){
@@ -143,45 +143,20 @@ function drawLine(x,y,u,v){ //ctx.beginPath();
 
 /* Draw a puzzle piece that only can have vertical connections. */
 function draw(bSet, transX, transY){
-  /* Regrettably, this implementation is slightly redundant because 
-      we had some problems filling a non-convex shape.  
-  */
   ctx.strokeStyle='blue';
   ctx.fillColor = 'blue';
   var sizeP = 67; 
-
+  
   /* Draw the shape (without edges). */
   ctx.beginPath();
   drawLine(  transX, transY+sizeP+15,transX, transY+15);
   drawUp(bSet, transX, transY, false);
-  drawLine(  transX+100, transY+15, transX+100, transY+sizeP+15); 
-  ctx.setTransform(1,0,0,1,0,0);
-  ctx.scale(-1, 1);
-  drawUp(bSet,-3.*transX, transY+sizeP, false);
+  drawLine(  transX+100, transY+15, transX+100, transY+sizeP+15);
+  drawUp(bSet, transX, transY+sizeP, true);//false);
   ctx.setTransform(1,0,0,1,0,0);
   ctx.closePath();
   ctx.fillStyle = '#8ED6FF';
   ctx.fill();
-  
-  /* Draw the border (except the bottom edge). */
-  ctx.beginPath();
-  drawLine(  transX, transY+sizeP+15,transX, transY+15);
-  drawUp(bSet, transX, transY, false);
-  drawLine(  transX+100, transY+15, transX+100, transY+sizeP+15);
-  ctx.closePath(); 
-  ctx.stroke(); 
-
-  /* Draw the border for the bottom edge. */
-  ctx.beginPath();
-  ctx.setTransform(1,0,0,1,0,0);
-  ctx.scale(-1, 1);
-  drawUp(bSet,-3.*transX, transY+sizeP, false);
-  ctx.setTransform(1,0,0,1,0,0);
-  drawLine(  transX+100, transY+15, transX+100, transY+sizeP+15);
-  ctx.closePath();
-  ctx.strokeStyle = 'blue';//white'; 
-  ctx.stroke();
-
 
 }
 
@@ -196,6 +171,10 @@ function makeBeziers(){
   ]);
 }
 
+function drawPuzzlePiece(x,y){
+  draw(bSet,x,y);//50,100);
+}
+
 //----------------------------------------------
 
  /* Global variables to track animation loop.. */
@@ -203,6 +182,9 @@ function makeBeziers(){
   var movingAverage = 0.; //moving average for fps calc... 
   var t0 = window.performance.now(); //start time..
   var t2 = 0; var t1=t0; //times used in loop..
+  
+  
+  var mx, my; mx=my=0;
 
   /* function to execute, animation loop.. */
   function frame(){
@@ -229,7 +211,7 @@ function makeBeziers(){
     
     
     draw(bSet,50,100);
-    
+    drawPuzzlePiece(mx, my);
   
     /*loop profiling section */
     var t2 = window.performance.now()
@@ -265,7 +247,10 @@ function makeBeziers(){
 
   canvas.onmousemove=function(e){
     //frame();  
+    
     var loc = windowToCanvas(canvas, e.clientX, e.clientY);
+    mx = loc.x;
+    my = loc.y;
     console.log('x '+(e.clientX).toString()+' y '+(e.clientY).toString()
 		+' cx '+(loc.x).toString()
 		+' cy '+(loc.y).toString()
