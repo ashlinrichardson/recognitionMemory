@@ -1,8 +1,9 @@
 <!DOCTYPE html>
 <meta http-equiv="content-type" content="text/html;charset=utf-8" />
-<canvas width="400" height="400">Error: HTML5 canvas unupported.</canvas><!--Dynamically resize this later-->
+<canvas width="800" height="800">Error: HTML5 canvas unupported.</canvas><!--Dynamically resize this later?-->
 <script>
 
+  var plopSound = new Audio('plop.mp3'); //  plopSound.play();
   /* check if localStorage is supported.. */
   function hasLocalStorage(){ 
     var test = 'test';
@@ -212,7 +213,7 @@ function drawGrid(cw, ch){
       var cI = i.toString()+','+j.toString();
       if( cI in gridContent){
       }else{
-	if( i%2==0 || j%2==0){
+	if( Math.random()<.4){////if( i%3==0 || j%==0){
 	  gridContent[cI]=1;
 	}else{
 	  gridContent[cI]=0;
@@ -223,6 +224,7 @@ function drawGrid(cw, ch){
  ctx.globalAlpha = 1.;
 
 }
+var pickThis = ''; //this gets set to a certain 'cI' if that one is picked.
 
 function drawGridContent(){
   for( var i =0; i<=cw/100; i++){
@@ -230,7 +232,11 @@ function drawGridContent(){
       var cI = i.toString()+','+j.toString();
       if( cI in gridContent){
 	if(gridContent[cI]==1){
+	  if( pickThis == cI){
+	    draw(mx, my, 100,100);//0 + 100*i,21 + 100*j, 100,100);
+	  }else{
 	      draw(0 + 100*i,21 + 100*j, 100,100);
+	  }
 	      //draw(mx, my, 100, 100);
 	}
       }
@@ -270,12 +276,11 @@ function drawGridContent(){
     
     /* Image scaling approach for logo (right corner) */
     ctx.save();
-ctx.globalAlpha = 1.0;
-    var lW = logoImg.width; var lH = logoImg.height;
-    var wf = (window.innerWidth-20)/(5. * lW);
-    ctx.drawImage( logoImg, w-(lW*wf),h-(lH*wf),lW*wf, lH*wf);
-
-ctx.restore();
+      ctx.globalAlpha = 1.0;
+      var lW = logoImg.width; var lH = logoImg.height;
+      var wf = (w-20)/(5. * lW);
+      ctx.drawImage( logoImg, w-(lW*wf),h-(lH*wf),lW*wf, lH*wf);
+    ctx.restore();
     
     drawGrid(w,h);
     drawGridContent();
@@ -289,7 +294,7 @@ ctx.restore();
     }
     t1 = t2; 
     if (i % 1000 == 0) {
-      console.log(movingAverage.toString().concat(" mS = ").concat((1. / (movingAverage / 1000.))).concat(" fpS"));
+      console.log(movingAverage.toString()+(' mS = ')+((1./(movingAverage/1000.)))+(' fpS'));
     }
     /* Total time elapsed since start.. */
     var timeElapsed = Math.ceil(( t1-t0)/1000.);  i += 1;
@@ -309,6 +314,39 @@ ctx.restore();
       }
     }
   };
+  
+   canvas.addEventListener("mousedown", function(e){  /* e.clientX, e.clientY */
+    /* mouse down event listener code... */ 
+    var loc = windowToCanvas(canvas, e.clientX, e.clientY);
+    mx = loc.x;
+    my = loc.y;
+    var cw = canvas.width;
+    var ch = canvas.height;
+    var cI = Math.floor( mx / 100)+','+ Math.floor( my/100); 
+    if( cI in gridContent){
+      pickThis = cI; 
+    }
+    
+  });
+
+  canvas.addEventListener("mouseup", function(e){  /* e.clientX, e.clientY */
+    var loc = windowToCanvas(canvas, e.clientX, e.clientY);
+    mx = loc.x;
+    my = loc.y;
+    if( pickThis!=''){
+      var cI = Math.floor( mx / 100)+','+ Math.floor( my/100); 
+      if( cI in gridContent){
+	if( gridContent[cI]==''){
+	  plopSound.play();
+	  console.log('Overwriting '+cI+' with '+pickThis);
+	  gridContent[cI]=gridContent[pickThis];
+	  gridContent[pickThis]='';
+	}
+      }
+    }
+    
+    pickThis ='';
+  });
 
 
 
@@ -316,8 +354,9 @@ ctx.restore();
     //frame();  
     
     var loc = windowToCanvas(canvas, e.clientX, e.clientY);
-    /*mx = loc.x;
-    my = loc.y;*/
+    mx = loc.x;
+    my = loc.y;
+    return;
     console.log('x '+(e.clientX).toString()+' y '+(e.clientY).toString()
 		+' cx '+(loc.x).toString()
 		+' cy '+(loc.y).toString()
