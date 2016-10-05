@@ -49,7 +49,7 @@
   init();
   var invColor;
   var img = new Image(); 
-  img.src = 'uvicAerial.jpg';
+  img.src = 'http://web.uvic.ca/~ashy/memory/uvicAerial.jpg';
   var avgColor = [0.,0.,0.];
   img.onload = function() {
     ctx.width = img.width;
@@ -378,7 +378,8 @@ function drawGridContent(){
     if( pickThis!=''){
       var cI = Math.floor( mx / 100)+','+ Math.floor( my/100); 
       if( cI in gridContent){
-	if( gridContent[cI]==''){
+	if( gridContent[cI]=='' /* only move to empty space*/ 
+	  && (cI!=pickThis)  /* if dest=src then it's not moving...*/   ){
 	  plopSound.play();
 	  console.log('Overwriting '+cI+' with '+pickThis);
 	  gridContent[cI]=gridContent[pickThis];
