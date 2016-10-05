@@ -4,10 +4,13 @@
 <head>
 <link rel="stylesheet" href="main.css">
 <title>Recognition Memory Experiment Framework</title>
-<h1> Recognition Memory Experiment Framework</h1>
+<img src="uvicSmall.png" class="invert" class="opacity">
+<h1>Recognition Memory Experiment Framework</h1>
 </head>
 <body>
-<canvas id="canvasID" width="800" height="800">Error: HTML5 canvas unupported.</canvas><!--Dynamically resize this later?-->
+<canvas id="canvasID" width="800" height="800">Error: HTML5 canvas unupported.</canvas><!--Dynamically resize this later?
+title="invert" class="invert"   (put that in img section, to invert the image...  
+-->
 <script>  
   var plopSound = new Audio('plop.mp3'); //  plopSound.play();
   /* check if localStorage is supported.. */
@@ -133,8 +136,7 @@
   /* set up the keyboard event handling scheme above.. */
   var keyboard = keyboard_module(testing);
   
-  /* load corporate logo */
-  var logoImg = new Image();  logoImg.src = "./uvicSmall.png";
+
 
   /* function to convert window mouse coordinates to canvas mouse coordinates. */
   function windowToCanvas(canvas, x,y){
@@ -276,9 +278,11 @@ function drawGridContent(){
       if( cI in gridContent){
 	if(gridContent[cI]==1){
 	  if( pickThis == cI){
+	    /* Mouse motion: puzzle piece follows mouse coordiantes: */
 	    draw(mx, my, 100,100);//0 + 100*i,21 + 100*j, 100,100);
 	  }else{
-	      draw(0 + 100*i,21 + 100*j, 100,100);
+	     //Puzzle piece is static: 
+	    draw(0 + 100*i,21 + 100*j, 100,100);
 	  }
 	      //draw(mx, my, 100, 100);
 	}
@@ -318,12 +322,14 @@ function drawGridContent(){
     ctx.stroke();
     
     /* Image scaling approach for logo (right corner) */
+    /*
     ctx.save();
       ctx.globalAlpha = 1.0;
       var lW = logoImg.width; var lH = logoImg.height;
       var wf = (w-20)/(5. * lW);
       ctx.drawImage( logoImg, w-(lW*wf),h-(lH*wf),lW*wf, lH*wf);
     ctx.restore();
+    */
     
     drawGrid(w,h);
     drawGridContent();
