@@ -350,7 +350,17 @@ function drawPiece(aTransX,aTransY, /* <-translation offset.. */ pw,ph /* <-puzz
 }
 
 
+/*
+  Draw the grid. 
+  
+  Also, (for now), randomly initialize (empty) puzzle piece
+    elements on the grid. 
+*/
 function drawGrid(cw, ch){
+  
+  /*
+     Draw the grid. 
+  */
   var v = 36;
   ctx.globalAlpha = 0.5;
   ctx.lineWidth=1;
@@ -363,6 +373,9 @@ function drawGrid(cw, ch){
     drawLine(0, j*100+v, cw, j*100+v);     ctx.stroke();
   }
   
+  /* Randomly initialize puzzle piece elements on the grid (for now).. 
+	Change this later.. 
+  */
   for( var i =0; i<=cw/100; i++){
     for(var j=0; j<=ch/100; j++){
       var cI = i.toString()+','+j.toString();
@@ -380,7 +393,9 @@ function drawGrid(cw, ch){
 
 }
 
-
+/*
+  Draw the puzzle pieces on the grid. 
+*/
 function drawGridContent(){
   for( var i =0; i<=cw/100; i++){
     for(var j=0; j<=ch/100; j++){
