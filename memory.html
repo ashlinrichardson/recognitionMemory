@@ -2,11 +2,12 @@
 <meta http-equiv="content-type" content="text/html;charset=utf-8" />
 
 <head>
-<link rel="stylesheet" href="main.css">
-<title>Recognition Memory Experiment Framework</title>
-<img src="uvicSmall.png" >
-<h1>Recognition Memory Experiment Framework</h1>
+  <link rel="stylesheet" href="main.css">	
+  <title>Recognition Memory Experiment Framework</title>
+  <img src="uvicSmall.png" >
+  <h1>Recognition Memory Experiment Framework</h1>
 </head>
+
 <body>
 <canvas id="canvasID" width="800" height="800">Error: HTML5 canvas unupported.</canvas><!--Dynamically resize this later?
 title="invert" class="invert"   (put that in img section, to invert the image...  
@@ -22,7 +23,7 @@ title="invert" class="invert"   (put that in img section, to invert the image...
       localStorage.removeItem(test);
       return true;
     }catch(e){
-      return false;
+      return(false);
     }
   }
   
@@ -79,60 +80,103 @@ title="invert" class="invert"   (put that in img section, to invert the image...
   img.onload = function() {
     /* 
       When the background image loads, calculate an approximation 
-	to the average colour of the image. 
+	to the average colour of the image. Ideally we would use 
+	an offscreen canvas or other method to do this, if we had more time.
+	
+	First: set the canvas size to the background image:
     */
     ctx.width = img.width;
     ctx.height = img.height;
+    
+    /* 
+      Draw the background image (temporarily) on the canvas. Read the data
+	values back in, and sample them to get an approximate average 
+	value of the colour of the background image. 
+    */
     ctx.drawImage(img, 0, 0);
     var imageData = ctx.getImageData(0, 0, img.width, img.height);
     var pix = imageData.data;
     var nn = 0;	
+    var nSkip = 7777; 
+    /* use a sample/fraction of the image data, to save time.. */
     for (var i = 0; i < pix.length; i+=4) {
-      if( i%10000==0){
+      /* Use (1/nSkip) of the image pixels. */
+      if( i%nSkip==0){
 	var r = 1.*pix[i  ];
 	var g = 1.*pix[i+1]; 
 	var b = 1.*pix[i+2];
 	avgColor[0]+=r; avgColor[1]+=g; avgColor[2]+=b; 
-	nn+=1.;
-	//console.log(r,g,b); 
-      }
-      // i+3 is alpha (the fourth element)
+	nn+=1.; /* keep track of the number of elements in the sample. */
+      }/* Don't forget: i+3 is alpha (the fourth element) */
     }
+    /* divide by sample mean to get an approximation of the average. */
     avgColor[0]/=nn;avgColor[1]/=nn; avgColor[2]/=nn;
-    //console.log(pix.length); //console.log( avgColor[0] , avgColor[1], avgColor[2]);
-    invColor = "rgb(" 
-		+(255-Math.floor(avgColor[0])).toString()
-		+ ","
-		+(255-Math.floor(avgColor[1])).toString()
-		+","
-		+(255-Math.floor(avgColor[2])).toString()
-		+")"; 
-		
+    /* calculate the inverted colour. */
+    invColor = 'rgb(' 
+		+(255-Math.floor(avgColor[0])).toString() +','
+		+(255-Math.floor(avgColor[1])).toString() +','
+		+(255-Math.floor(avgColor[2])).toString() 
+		+')'; 
     avgColor = inverseColor( invColor); 
   }
 
- 
-
-
-
-  
-
   ctx.width = 800; 
   ctx.height=800; 
-  
+
   /* State variables */
+  var gridContent = { } ;   /* 	<--- Variable indicating if the grid square:  
+	at location:  '(' + i.toString() +',' + j.toString() + ')'   (***) 
+      is occupied. 
+      
+      The variable holds a name (a number >=0) of the occupying 
+      puzzle piece. If the grid location is empty, the value is set to -1;
+      
+      gridContent maps from (***) to the index in puzzlePieceData 
+	(or -1 if the square (***) is empty..)
+  */
+   
+
+  var puzzlePieceData = new Array( Math.ceil( ctx.width / 100) * Math.ceil( ctx.height/100));
+  for( var i=0; i<puzzlePieceData.length; i++){
+    puzzlePieceData[i] = { 'text':'' } ; //let's add a 'text' property later.. and other properties. 
+  }
+  var nextPuzzlePieceName = 0;
+
   var pickThis = ''; //this gets set to a certain 'cI' if a certain grid element gets picked. 
   var selectedItem = ''; /* Something that gets picked will get selected. You can unselect it by rePicking. */
   var selectedX  = '';
-
-  
   /* set up keyboard handlers, and keyboard state variables.. */
   var lastKeyPressed = ''; //track the last key pressed (onkeydown).. 
+  
+  /* convert a string of form:
+	'1,2'
+
+     to a pair of integers of form:
+	[1,2]
+  
+  */
+  function toPair( ci){
+    var parts = ci.split(',');
+    for(var i=0; i<2; i++){
+      parts[i]=parseInt(parts[i]);
+    }
+    return( parts);
+  }
+  
+  /* 
+    Disable scroll down when spacebar is pressed
+  */
+  window.onkeydown = function(e) { 
+    return !(e.keyCode == 32);
+  };
+
+  
   function keyboard_module(onUpdate) {
     var kb = {};
     var unicode_mapping = {};
     /* handler for key down event.. override automatic key repeats!*/
     document.onkeydown = function(e) {
+      //console.log( 'key code: '+ (e.keyCode).toString()+ ' charCode: '+(e.charCode).toString()); 
       var unicode = e.charCode ? e.charCode : e.keyCode
       var key = getKey(unicode);
       if(lastKeyPressed!='' && (lastKeyPressed==key)){
@@ -151,6 +195,20 @@ title="invert" class="invert"   (put that in img section, to invert the image...
       delete kb[key];
       if (onUpdate) {
         onUpdate(kb);
+      }
+      if( selectedItem!=''){
+	//console.log('Selected item!!!!');
+	
+	if( e.charCode==8){
+	  /* backSpace (need to add other 'control' characters..) */
+	}else{
+	  //var gridCoords = toPair( selectedItem);
+	  var myName = gridContent[ selectedItem];
+	  var curText = (puzzlePieceData[myName])['text'];
+	  curText+= String.fromCharCode(unicode); //unicode.toString();
+	  (puzzlePieceData[myName])['text']=curText;
+	  
+	}
       }
     }
     /* function to check the keyboard state.. */
@@ -245,24 +303,7 @@ function drawLine(x,y,u,v){ //ctx.beginPath();
 }
 
 
-/* Variable that indicates whether the grid location:  
-    '(' + i.toString() +',' + j.toString() + ')'         (***) 
-  is occupied.
-  
-  The variable will hold a name (a number >=0) of the 
-  occupying piece. If the grid location is empty, the value 
-  will be -1. 
-  
-  gridContent maps from (***) to the index in puzzlePieceData 
-    (or -1 if the square (***) is empty..)
-*/
-var gridContent = { } ;  
 
-var puzzlePieceData = new Array( Math.ceil( ctx.width / 100) * Math.ceil( ctx.height/100));
-for( var i=0; i<puzzlePieceData.length; i++){
-  puzzlePieceData[i] = { 'text':'' } ; //let's add a 'text' property later.. and other properties. 
-}
-var nextPuzzlePieceName = 0;
 
 
 /* Draw a puzzle piece that only can have vertical connections. */
