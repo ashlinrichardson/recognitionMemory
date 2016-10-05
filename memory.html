@@ -1,13 +1,14 @@
 <!DOCTYPE html>
+<meta http-equiv="content-type" content="text/html;charset=utf-8" />
+
 <head>
 <link rel="stylesheet" href="main.css">
+<title>Recognition Memory Experiment Framework</title>
+<h1> Recognition Memory Experiment Framework</h1>
 </head>
-<meta http-equiv="content-type" content="text/html;charset=utf-8" />
+<body>
 <canvas id="canvasID" width="800" height="800">Error: HTML5 canvas unupported.</canvas><!--Dynamically resize this later?-->
-<script>
-
-
-  
+<script>  
   var plopSound = new Audio('plop.mp3'); //  plopSound.play();
   /* check if localStorage is supported.. */
   function hasLocalStorage(){ 
@@ -413,4 +414,5 @@ function drawGridContent(){
   var id = setInterval(frame, 100);  //might reduce this number to decrease latency.. 
   
 </script>
+</body>
 </html>

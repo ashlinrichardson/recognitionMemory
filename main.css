@@ -8,3 +8,15 @@ html {
 #canvasID{
     opacity:0.9;
 }
+
+@font-face {
+  font-family: trajan-pro;
+  src: url('http://web.uvic.ca/~ashy/memory/TrajanBold.ttf');
+}
+
+h1 { font-family: trajan-pro; 
+  
+
+    font-size: 30.5px;
+}
+
