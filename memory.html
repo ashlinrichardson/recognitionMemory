@@ -88,6 +88,11 @@ title="invert" class="invert"   (put that in img section, to invert the image...
 
   ctx.width = 800; 
   ctx.height=800; 
+  
+  /* State variables */
+  var pickThis = ''; //this gets set to a certain 'cI' if a certain grid element gets picked. 
+  var selectedItem = ''; /* Something that gets picked will get selected. You can unselect it by rePicking. */
+   
 
   
   /* set up keyboard handlers, and keyboard state variables.. */
@@ -208,8 +213,24 @@ function drawLine(x,y,u,v){ //ctx.beginPath();
   ctx.lineTo(u,v); //ctx.closePath(); //ctx.stroke();
 }
 
+function inverseColor( rgbColor){
+/*Return the string for the complementary inverse color, 
+for a color string of the format:
+  rgb(230,226,224)
+*/
+  var values = (rgbColor.slice(4, rgbColor.length-1)).split(',');
+  /* should now have a string array like this:
+      230,226,224
+   */
+   var s = 'rgb(';
+   for( var i=0; i<3; i++){
+    s+= (255-parseInt(values[i])).toString();
+    if( i<2) s+=',';
+   }
+  return(s+')'); 
+}
 /* Draw a puzzle piece that only can have vertical connections. */
-function draw(transX,transY, /* <-translation offset.. */ pw,ph /* <-puzzle piece dims..*/ ){ 
+function drawPiece(transX,transY, /* <-translation offset.. */ pw,ph /* <-puzzle piece dims..*/ , isSelected){ 
   ctx.lineWidth=0.5;
   ctx.strokeStyle='blue';
   var sizeP = ph;//100; 
@@ -223,7 +244,12 @@ function draw(transX,transY, /* <-translation offset.. */ pw,ph /* <-puzzle piec
   drawUp(transX, transY+sizeP, true, pw);//false);
   ctx.setTransform(1,0,0,1,0,0);
   ctx.closePath();
-  ctx.fillStyle =invColor;//'#8ED6FF';
+  if( isSelected==true){
+    ctx.fillStyle = inverseColor(invColor);
+  }else{
+    ctx.fillStyle =invColor;//'#8ED6FF';
+   }
+  //console.log(invColor, inverseColor(invColor));
   ctx.fill();
   
   /* draw the picking area.. MAYBE only draw this when the piece is highlighted!!! */
@@ -270,7 +296,7 @@ function drawGrid(cw, ch){
  ctx.globalAlpha = 1.;
 
 }
-var pickThis = ''; //this gets set to a certain 'cI' if that one is picked.
+
 
 function drawGridContent(){
   for( var i =0; i<=cw/100; i++){
@@ -280,10 +306,10 @@ function drawGridContent(){
 	if(gridContent[cI]==1){
 	  if( pickThis == cI){
 	    /* Mouse motion: puzzle piece follows mouse coordiantes: */
-	    draw(mx, my, 100,100);//0 + 100*i,21 + 100*j, 100,100);
+	    drawPiece(mx, my, 100,100, cI==selectedItem);//0 + 100*i,21 + 100*j, 100,100);
 	  }else{
 	     //Puzzle piece is static: 
-	    draw(0 + 100*i,21 + 100*j, 100,100);
+	    drawPiece(0 + 100*i,21 + 100*j, 100,100, cI==selectedItem);
 	  }
 	      //draw(mx, my, 100, 100);
 	}
@@ -375,6 +401,14 @@ function drawGridContent(){
     var cI = Math.floor( mx / 100)+','+ Math.floor( my/100); 
     if( cI in gridContent){
       pickThis = cI; 
+      
+      if( selectedItem ==cI){
+	/* If the picked item was already selected, unselect it. */
+	selectedItem = '';
+      }else{
+	/* If the picked item was not already selected, select it! */
+	selectedItem = cI;
+      }
     }
     
   });
