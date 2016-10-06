@@ -307,6 +307,15 @@ Supported Schema:
 		progIter++;
 		varSave('progIter');
 	}
+	else{
+		var progIter = 0;
+		varInit('progIter');
+		document.getElementById("h1").innerHTML = "Recognition Memory Experiment Framework (iter="+progIter.toString()+")";
+		progIter++;
+		varSave('progIter');
+	}
+	
+	
   
   var invColor;
   var img = new Image(); 
@@ -771,7 +780,7 @@ drawGridContent();
 */
 
 varInit('gridContent');
-varInit('puzzlePieceData');
+varInit('puzzlePieceData');   //next, use JSON.stringify() and JSON.parse()
 //----------------------------------------------
 
  /* Global variables to track animation loop.. */
