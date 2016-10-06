@@ -743,7 +743,8 @@ function drawGridContent(){
 	if(gridContent[cI]>=0){
 	  if( pickThis == cI){
 	    /* Mouse motion: puzzle piece follows mouse coordiantes: */
-	    drawPiece(mx, my, 100,100, cI==selectedItem, cI);//0 + 100*i,21 + 100*j, 100,100);
+	    drawPiece(mx, my, 100,100, cI==selectedItem, cI);
+				//0 + 100*i,21 + 100*j, 100,100);
 	  }else{
 	     //Puzzle piece is static: 
 	    drawPiece(0 + 100*i,21 + 100*j, 100,100, cI==selectedItem, cI);
@@ -762,31 +763,15 @@ drawGrid(w,h);
 drawGridContent();
 
 /*
-	before drawing or initializing the grid, try to restore it:
+	This comment used to read
+	"Before drawing or initializing the grid, try to restore it:"
+	
+	.. but now, we need to adjust that statement, because we would like to 
+		initialize the variables schema, in order to dump data into them.. 
 */
 
-
-
 varInit('gridContent');
-console.log('++++++++++++++++++++++++gridContent', gridContent);
-console.log('getKeys(gridContent)');
-var myKeysAre = getKeys(gridContent);
-console.log(myKeysAre);
-console.log('Object.keys(gridContent)', Object.keys(gridContent));
-for (var v in gridContent){
-	console.log('push v in gridContent:---> ', v);
-}
-console.log('console.log(Object.keys(gridContent));');
-console.log(Object.keys(gridContent));
-console.log('JSON.stringify(gridContent)');
-console.log(JSON.stringify(gridContent));
-
-
-
-if(false){
-	varInit('puzzlePieceData');
-	console.log('puzzlePieceData, getKeys():::::::::::::::::::::;', getKeys(puzzlePieceData));
-}
+varInit('puzzlePieceData');
 //----------------------------------------------
 
  /* Global variables to track animation loop.. */
