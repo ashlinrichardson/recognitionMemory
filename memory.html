@@ -125,7 +125,35 @@ Supported Schema:
 					> varInit('puzzlePieceData')
 					< memory.html:117 Note: detected one type of key.
 
-				.. now we need to differentiate according to the two types... */
+				.. now we need to differentiate according to the two values:... 
+				
+					Type  I)  var gridContent = { } ;  	   		     (dict) 
+					Type II)  puzzlePieceData[i] = { 'text':'' } ; (array of dict)
+
+				*/
+				var valueType = 'string';
+				for(var i in myKeys){
+					valueType = eval('typeof('+variableName+'[i]);');
+				}
+				if( valueType=='string'){
+					console.log(variableName,': data type I)');
+				}else{
+					console.log(variableName,': data type II)');
+				}
+				
+				/* 
+					Startup info confirms that this is working.. 
+		
+										checking prerequisites..
+						memory.html:190 prerequisites seem to be ok..
+						memory.html:119 Note: detected one type of key.
+						memory.html:139 gridContent : data type I)
+						memory.html:119 Note: detected one type of key.
+						memory.html:141 puzzlePieceData : data type II)
+				
+				*/
+				
+				
 			}
 		}else{
 			console.log('Non-supported type: ',varType);
@@ -145,6 +173,9 @@ Supported Schema:
 	document.getElementById("h1").innerHTML = "Recognition Memory Experiment Framework (iter="+progIter.toString()+")";
 	progIter++;
 	varSave('progIter');
+	
+
+	
  
  
   /* keep hooks to our html5 canvas, and canvas.context.. */
@@ -575,6 +606,11 @@ function drawPiece(aTransX,aTransY, /* <-translation offset.. */ pw,ph /* <-puzz
   
 }
 
+/*
+	before drawing or initializing the grid, try to restore it:
+*/
+varInit('gridContent');
+varInit('puzzlePieceData');
 
 /*
   Draw the grid. 
