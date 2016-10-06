@@ -80,7 +80,14 @@
   
   
       /* State variables */  //  
-  var gridContent = {};  /* 
+  var gridContent = {}; 
+  
+  if(false){
+		localStorage.removeItem('gridContent');
+		localStorage.removeItem('puzzlePieceData');
+ } 
+  /* 
+  
   //  new Array(Math.ceil( ctx.width / 100) * Math.ceil( ctx.height/100)); //{ } ;    	<--- Variable indicating if the grid square:  
 	at location:  '(' + i.toString() +',' + j.toString() + ')'   (***) 
       is occupied. 
@@ -646,7 +653,7 @@ drawGridContent();
 	.. but now, we need to adjust that statement, because we would like to 
 		initialize the variables schema, in order to dump data into them.. 
 */
-if(false){
+if(true){
 	varInit('gridContent');
 	varInit('puzzlePieceData');   //next, use JSON.stringify() and JSON.parse()
 	/*
@@ -733,9 +740,8 @@ if(false){
       }
     }
     
-    	//gridContent= varSave('gridContent');
-			//puzzlePieceData =varSave('puzzlePieceData');
-	
+    	varSave('gridContent');
+			varSave('puzzlePieceData');
   };
   
   /* Mouse button down event */
