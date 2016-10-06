@@ -2,17 +2,14 @@
 <meta http-equiv="content-type" content="text/html;charset=utf-8" />
 
 <head>
-  <link rel="stylesheet" href="main.css">	
+  <link rel="stylesheet" href="main.css"> 
   <title>Recognition Memory Experiment Framework</title>
   <img src="uvicSmall.png" >
   <h1>Recognition Memory Experiment Framework</h1>
 </head>
 
 <body>
-<canvas id="canvasID" width="800" height="800">Error: HTML5 canvas unupported.</canvas><!--Dynamically resize this later?
-title="invert" class="invert"   (put that in img section, to invert the image...  
--->
-<!-- <embed src="20160928requirements.pdf" width="800" height="800" type='application/pdf' class="invert"> -->
+<canvas id="canvasID" width="800" height="800">Error: HTML5 canvas unupported.</canvas>
 <script>  
   var plopSound = new Audio('plop.mp3'); //  plopSound.play();
   /* check if localStorage is supported.. */
@@ -27,6 +24,22 @@ title="invert" class="invert"   (put that in img section, to invert the image...
     }
   }
   
+  /* Persistent variables schema..  
+      Persistent variables stored in string format. 
+      When initialized, if direct conversion to INT possible, 
+      perform that conversion!!!!!
+      
+      Add method for assigment (that does the "backup"). 
+  
+ 
+Supported Schema:
+	var nextPuzzlePieceName = 0; 	      	(simple) 
+   	var gridContent = { } ;  	   	(dict) 
+   	puzzlePieceData[i] = { 'text':'' } ;  	(array of dict) 
+
+ */
+ 
+ 
   /* keep hooks to our html5 canvas, and canvas.context.. */
   var canvas, ctx; 
 
@@ -85,7 +98,7 @@ title="invert" class="invert"   (put that in img section, to invert the image...
 	
 	First: set the canvas size to the background image:
     */
-    ctx.width = img.width;
+    ctx.width = img.width; 
     ctx.height = img.height;
     
     /* 
@@ -93,23 +106,23 @@ title="invert" class="invert"   (put that in img section, to invert the image...
 	values back in, and sample them to get an approximate average 
 	value of the colour of the background image. 
     */
-    ctx.drawImage(img, 0, 0);
+    ctx.drawImage(img, 0, 0); //write bg image to the canvas. 
     var imageData = ctx.getImageData(0, 0, img.width, img.height);
-    var pix = imageData.data;
-    var nn = 0;	
+    var pix = imageData.data; //read back the pixel data. 
+    var nn = 0;	//count the number of points used in the sample. 
     var nSkip = 7777; 
     /* use a sample/fraction of the image data, to save time.. */
     for (var i = 0; i < pix.length; i+=4) {
       /* Use (1/nSkip) of the image pixels. */
       if( i%nSkip==0){
-	var r = 1.*pix[i  ];
-	var g = 1.*pix[i+1]; 
-	var b = 1.*pix[i+2];
+	var r = 1.*pix[i  ];//red
+	var g = 1.*pix[i+1];//green
+	var b = 1.*pix[i+2];//blue
 	avgColor[0]+=r; avgColor[1]+=g; avgColor[2]+=b; 
 	nn+=1.; /* keep track of the number of elements in the sample. */
-      }/* Don't forget: i+3 is alpha (the fourth element) */
+      }/* Note: pix[i+3] is 'alpha' (the fourth element) */
     }
-    /* divide by sample mean to get an approximation of the average. */
+    /* divide by sample mean to get an approximation of the average: */
     avgColor[0]/=nn;avgColor[1]/=nn; avgColor[2]/=nn;
     /* calculate the inverted colour. */
     invColor = 'rgb(' 
@@ -117,13 +130,13 @@ title="invert" class="invert"   (put that in img section, to invert the image...
 		+(255-Math.floor(avgColor[1])).toString() +','
 		+(255-Math.floor(avgColor[2])).toString() 
 		+')'; 
-    avgColor = inverseColor( invColor); 
+    avgColor = inverseColor( invColor);//represent the original in the same format. 
   }
 
   ctx.width = 800; 
-  ctx.height=800; 
+  ctx.height= 800; 
 
-  /* State variables */
+  /* State variables */  //  
   var gridContent = { } ;   /* 	<--- Variable indicating if the grid square:  
 	at location:  '(' + i.toString() +',' + j.toString() + ')'   (***) 
       is occupied. 
@@ -135,7 +148,6 @@ title="invert" class="invert"   (put that in img section, to invert the image...
 	(or -1 if the square (***) is empty..)
   */
    
-
   var puzzlePieceData = new Array( Math.ceil( ctx.width / 100) * Math.ceil( ctx.height/100));
   for( var i=0; i<puzzlePieceData.length; i++){
     puzzlePieceData[i] = { 'text':'' } ; //let's add a 'text' property later.. and other properties. 
@@ -150,10 +162,9 @@ title="invert" class="invert"   (put that in img section, to invert the image...
   
   /* convert a string of form:
 	'1,2'
-
+	
      to a pair of integers of form:
 	[1,2]
-  
   */
   function toPair( ci){
     var parts = ci.split(',');
@@ -372,10 +383,6 @@ function drawLine(x,y,u,v){ //ctx.beginPath();
   ctx.lineTo(u,v); //ctx.closePath(); //ctx.stroke();
 }
 
-
-
-
-
 /* Draw a puzzle piece that only can have vertical connections. */
 function drawPiece(aTransX,aTransY, /* <-translation offset.. */ pw,ph /* <-puzzle piece dims..*/ , isSelected, cI){ 
   
@@ -583,7 +590,12 @@ function drawGridContent(){
     /* Total time elapsed since start.. */
     var timeElapsed = Math.ceil(( t1-t0)/1000.);  i += 1;
     if(false){
-      /* print out DOM element names... */
+      /* print out DOM element names... 
+      
+	 Was looking to see if generally there was a pattern, 
+	  the two methods for exploring the DOM don't seem 
+	  to give the same results. 
+      */
       var all = document.getElementsByTagName("*");
       for (var i=0, max=all.length; i < max; i++) {
 	// Do something with the element here	
@@ -599,6 +611,7 @@ function drawGridContent(){
     }
   };
   
+  /* Mouse button down event */
    canvas.addEventListener("mousedown", function(e){  /* e.clientX, e.clientY */
     /* mouse down event listener code... */ 
     var loc = windowToCanvas(canvas, e.clientX, e.clientY);
@@ -607,22 +620,26 @@ function drawGridContent(){
     var cw = canvas.width;
     var ch = canvas.height;
     var cI = Math.floor( mx / 100)+','+ Math.floor( my/100); 
+    /* Did we click on a 'valid' grid square? */
     if( cI in gridContent){
       pickThis = cI; 
-      
+      /* was this item already selected? */
       if( selectedItem ==cI){
 	/* If the picked item was already selected, unselect it. */
 	selectedItem = '';
       }else{
 	/* If the picked item was not already selected, select it! */
 	selectedItem = cI;
-	/* Track the offset of the mouse position, from */
+	/* Track the starting mouse position for the selection 
+	    .. the idea was to use this as an "offset", later. 
+	*/
 	selectedX = [mx, my]; 
       }
     }
     
   });
 
+  /* Mouse up event.. */
   canvas.addEventListener("mouseup", function(e){  /* e.clientX, e.clientY */
     var loc = windowToCanvas(canvas, e.clientX, e.clientY);
     mx = loc.x;
@@ -631,7 +648,7 @@ function drawGridContent(){
       var cI = Math.floor( mx / 100)+','+ Math.floor( my/100); 
       if( cI in gridContent){
 	if( gridContent[cI]<0 /*==''*/ /* only move to empty space*/ 
-	  && (cI!=pickThis)  /* if dest=src then it's not moving...*/   ){
+	    && (cI!=pickThis)  /* if dest=src then don't move!!!!..  */ ){
 	  plopSound.play();
 	  console.log('Overwriting '+cI+' with '+pickThis+ ' puzzlePieceName=' 
 	    +(gridContent[pickThis]).toString());
@@ -640,30 +657,26 @@ function drawGridContent(){
 	}
       }
     }
-    
+    /* keep the status quo. */
     pickThis ='';
   });
-
-
-
+  
   canvas.onmousemove=function(e){
-    //frame();  
-    
     var loc = windowToCanvas(canvas, e.clientX, e.clientY);
     mx = loc.x;
     my = loc.y;
     return;
-    console.log('x '+(e.clientX).toString()+' y '+(e.clientY).toString()
-		+' cx '+(loc.x).toString()
-		+' cy '+(loc.y).toString()
-		+' i  '+Math.floor(loc.x / 100).toString()
-		+' j  '+Math.floor(loc.y / 100).toString()
-		/*+' cw '+canvas.width.toString()
-		+' ch '+canvas.height.toString()*/
+    console.log(
+	'x '+(e.clientX).toString()+' y '+(e.clientY).toString()
+      + ' cx '+(loc.x).toString()
+      + ' cy '+(loc.y).toString()
+      + ' i  '+Math.floor(loc.x / 100).toString()
+      + ' j  '+Math.floor(loc.y / 100).toString()
       );
   };
 
-  var id = setInterval(frame, 100);  //might reduce this number to decrease latency.. 
+  /* this command actually starts the animation-loop:.. */
+  var id = setInterval(frame, 55);  //Can reduce this number to decrease latency..  
   
 </script>
 </body>
