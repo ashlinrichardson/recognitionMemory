@@ -103,6 +103,7 @@
   var selectedX  = '';
   /* set up keyboard handlers, and keyboard state variables.. */
   var lastKeyPressed = ''; //track the last key pressed (onkeydown).. 
+  var progIter=0;
   
   
     /* Persistent variables schema..  
@@ -144,178 +145,45 @@ Supported Schema:
 	}
 		
  
-  function varInit(variableName){  /* init variable, but restore if not already defined... */
-		console.log('********varInit('+variableName.toString()+')');
-		eval('console.log(' + variableName+');');
-
-	
-		/* to get the variable's keys, need to discern between 
-			array and object types.  */
-		var myKeys = [];
-  	var isArray = eval( variableName+' instanceof Array ');
-  	console.log('isArray =',isArray);
-		if(isArray){
-			myKeys = eval('Object.keys('+variableName+');');
-		}else{
-
-			//myKeys = [ ];
-			console.log('pushing...myVariable:::::');
-			var myVariable = eval(variableName);
-			console.log(myVariable);
-			/*for( var k in myVariable){
-				myKeys.push(k);
-				console.log('push:',k);
-			}*/
-			myKeys = getKeys( myVariable);
-			//eval('for(var k in '+variableName+'){ myKeys.push(k); console.log("push",k);}');
-		}
-		console.log('---------------------------- is this working???\n\n');
-		eval('console.log('+myKeys+');');
-		console.log('-----------------------------------------------');
-		
-		/* Don't wipe any keys that are in there..*/
-    var varType =eval('typeof('+variableName+')');
-    var item = localStorage.getItem(variableName);  
-    /* First case: "leaf" type data:.. */
-    if( varType == 'string' || varType == 'number'){
-			//leaf type of object..
-			
-			if(item==null){
-				//item was not initialized. 
-				localStorage.setItem(variableName, eval(variableName).toString());
-			}else{
-				//item was initialized. 
-				var myValue=null;
-				try{
-					//is it an int?
-					myValue = parseInt( item); 
-					eval(variableName+' = myValue;');
-				}catch(e){
-					//not an int.. 
-					try{
-						//how about float?
-						myValue = parseFloat( item);
-						eval(variableName+' = myValue;');
-					}catch(e){
-						eval(variableName+' = item;');
-					}
-				}//value is not int.. 
-			}
-			/* next case: dict-type data: */
-		}else if( varType=='object'){
-			//check for keys..
-			
-			/* calculate a histogram on the types of keyed data: */
-			var myCount = {};
-			for(var i=0; i<myKeys.length; i++){
-				var valType = eval('typeof(myKeys[i]);');
-				if( myCount[valType]){
-					myCount[valType]+=1;
-				}else{
-					myCount[valType]=1;
-				}
-			}
-			if( myCount.length >1){
-				console.log('Error: more than one key type detected.');
-
-				
-			}else{
-				console.log('Note: detected one type of key.');
-				/* 
-					>	varInit('gridContent')
-					<   memory.html:117 Note: detected one type of key.
-					
-					
-					> varInit('puzzlePieceData')
-					< memory.html:117 Note: detected one type of key.
-
-				.. now we need to differentiate according to the two values:... 
-				
-					Type  I)  var gridContent = { } ;  	   		     (dict) 
-					Type II)  puzzlePieceData[i] = { 'text':'' } ; (array of dict)
-
-				*/
-				var valueType = 'string';
-				for(var i in myKeys){
-					valueType = eval('typeof('+variableName+'[i]);');
-				}
-				if( valueType=='string'){
-					console.log(variableName,': data type I) -->');
-				}else{
-					console.log(variableName,': data type II) -->');
-				}
-				
-				/* 
-					Startup info confirms that this is working.. 
-		
-										checking prerequisites..
-						memory.html:190 prerequisites seem to be ok..
-						memory.html:119 Note: detected one type of key.
-						memory.html:139 gridContent : data type I)
-						memory.html:119 Note: detected one type of key.
-						memory.html:141 puzzlePieceData : data type II)
-						
-						Sample data:
-						
-						gridContent['0-0']:
-							0
-						puzzlePieceData['0']['text']:
-							"asdf"
-				
-				*/
-				if( item==null){
-					console.log('console.log(">>>>>>>eval: "+Object.keys('+variableName+').toString());');
-					eval('console.log(">>>>>>>eval: "+Object.keys('+variableName+').toString());'); 
-				//console.log('eval: ', ('Object.keys('+variableName+');'), eval('Object.keys('+variableName+');'));
-					if( valueType=='string'){
-						
-						
-						//console.log(variableName,': data type I)'); //gridContent: {0-0: 0, 0-1:
-						var s = ''; var j=0;
-						for(var i in eval('Object.keys('+variableName+');')){
-						  if(j>0){ s+=',';}
-							s+= (i.toString()+': '+ eval(variableName+'[i]').toString());
-							j++;
-						}
-						console.log('s: ',s);
-					}else{
-						//console.log(variableName,': data type II)');
-					}
-					//localStorage.setItem( 
-				}
-				
-				
-			}
-		}else{
-			console.log('Non-supported type: ',varType);
-		}
-	}
-  
-  /* transfer inMemory variable to localStorage.. */
+   /* transfer inMemory variable to localStorage.. 
+   
+   NB variables need to be defined at the top, for this to work..
+   
+   */
 	function varSave(variableName){
-		var varType =eval('typeof('+variableName+')');
-		if( varType == 'string' || varType == 'number'){
-			//leaf type of object..
-			var item = localStorage.setItem(variableName, eval(variableName).toString());
+		var myValue = eval('JSON.stringify('+variableName+');');
+		localStorage.setItem(variableName, myValue);
+		//eval('localStorage.setItem('+variableName+',JSON.stringify('+variableName+'));');
+		//localStorage.setItem(variableName, eval('JSON.stringify('+variableName+');'));
+	}
+	
+	/* 
+			transfer localStorage version to inMemory variable (if available)..
+			otherwise, initialize a new localStorage version.. 
+			N.B., not really a version: more like a copy!
+	
+	*/
+  function varInit(variableName){  /* init variable, but restore if not already defined... */
+		var item = localStorage.getItem(variableName);
+		if(item==null){
+			/* no localStorage copy to restore-- so, write one:  */
+			varSave(variableName);
+			eval('console.log('+variableName+');');
+			return(eval(variableName));
+		}else{
+		 /* restore localStorage copy. */
+		  eval(variableName+' = JSON.parse(item);');
+		  eval('console.log('+variableName+');');
+		  return(JSON.parse(item));
 		}
 	}
-	if(false){
-		
-		var progIter = 0;
-		varInit('progIter');
+
+	if(true){
+		progIter = varInit('progIter');
 		document.getElementById("h1").innerHTML = "Recognition Memory Experiment Framework (iter="+progIter.toString()+")";
 		progIter++;
 		varSave('progIter');
-	}
-	else{
-		var progIter = 0;
-		varInit('progIter');
-		document.getElementById("h1").innerHTML = "Recognition Memory Experiment Framework (iter="+progIter.toString()+")";
-		progIter++;
-		varSave('progIter');
-	}
-	
-	
+	}	
   
   var invColor;
   var img = new Image(); 
@@ -778,9 +646,16 @@ drawGridContent();
 	.. but now, we need to adjust that statement, because we would like to 
 		initialize the variables schema, in order to dump data into them.. 
 */
-
-varInit('gridContent');
-varInit('puzzlePieceData');   //next, use JSON.stringify() and JSON.parse()
+if(false){
+	varInit('gridContent');
+	varInit('puzzlePieceData');   //next, use JSON.stringify() and JSON.parse()
+	/*
+		progIter = varInit('progIter');
+		document.getElementById("h1").innerHTML = "Recognition Memory Experiment Framework (iter="+progIter.toString()+")";
+		progIter++;
+		varSave('progIter');
+	*/	
+}
 //----------------------------------------------
 
  /* Global variables to track animation loop.. */
@@ -857,6 +732,10 @@ varInit('puzzlePieceData');   //next, use JSON.stringify() and JSON.parse()
 	console.log(currentNode.nodeName);
       }
     }
+    
+    	//gridContent= varSave('gridContent');
+			//puzzlePieceData =varSave('puzzlePieceData');
+	
   };
   
   /* Mouse button down event */
