@@ -226,16 +226,38 @@ title="invert" class="invert"   (put that in img section, to invert the image...
 		(would have to modify the wrapText method). 
 	    */
 	  }
-	  if( unicode==190){
-	    newValue = '.';
+	  function reMap(u,newVal, shiftVal){
+	    var ret = newValue; 
+	    if(unicode==u){
+	      ret = newVal; 
+	      if(shiftKey){
+		ret = shiftVal; 
+	      }
+	    }return(ret);
 	  }
-	  if(unicode==191){
-	    newValue = '/';
-	    if( shiftKey){
-	      newValue = '?';
-	    }
-	  }
-	  if( shiftKey  ){
+	  newValue= reMap(190,  '.',  '>');
+	  newValue= reMap(188,  ',',  '<'); //might need to  
+	  newValue= reMap(186,  ';',  ':');
+	  newValue= reMap(222,  "'",  '"');
+	  newValue= reMap(191,  '/',  '?');
+	  newValue= reMap(219,  '[',  '{');
+	  newValue= reMap(221,  ']',  '}');
+	  newValue= reMap(220,  "\\", '|'); //might need to disable backslash later. 
+	  newValue= reMap(221,  ']',  '}');
+ 	  newValue= reMap(192,  '`',  '~');
+	  newValue= reMap( 49,  '1',  '!');
+  	  newValue= reMap( 50,  '2',  '@');    
+ 	  newValue= reMap( 51,  '3',  '#');
+ 	  newValue= reMap( 52,  '4',  '$');
+ 	  newValue= reMap( 53,  '5',  '%');
+ 	  newValue= reMap( 54,  '6',  '^');
+ 	  newValue= reMap( 55,  '7',  '&');
+ 	  newValue= reMap( 56,  '8',  '*');
+ 	  newValue= reMap( 57,  '9',  '(');
+ 	  newValue= reMap( 48,  '0',  ')');
+ 	  newValue= reMap(189,  '-',  '_');
+ 	  newValue= reMap(187,  '=',  '+');
+	  if( shiftKey ){
 	    newValue = (newValue.toString()).toUpperCase();
 	  }else{
 	    newValue = (newValue.toString()).toLowerCase();
