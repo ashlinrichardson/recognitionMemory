@@ -69,76 +69,83 @@ Supported Schema:
  */
  
   function varInit(variableName){  /* init variable, but restore if not already defined... */
-      /* Don't wipe any keys that are in there..*/
-      var varType =eval('typeof('+variableName+')');
+		/* Don't wipe any keys that are in there..*/
+    var varType =eval('typeof('+variableName+')');
       
-      /* First case: "leaf" type data:.. */
-      if( varType == 'string' || varType == 'number'){
-	//leaf type of object..
-	var item = localStorage.getItem(variableName);
-	if(item==null){
-	  //item was not initialized. 
-	  localStorage.setItem(variableName, eval(variableName).toString());
-	}else{
-	  //item was initialized. 
-	  var myValue=null;
-	  try{
-	    //is it an int?
-	    myValue = parseInt( item); 
-	    eval(variableName+' = myValue;');
-	  }catch(e){
-	    //not an int.. 
-	    try{
-	      //how about float?
-	      myValue = parseFloat( item);
-	      eval(variableName+' = myValue;');
-	    }catch(e){
-	      eval(variableName+' = item;');
-	    }
-	  }//value is not int.. 
+    /* First case: "leaf" type data:.. */
+    if( varType == 'string' || varType == 'number'){
+			//leaf type of object..
+			var item = localStorage.getItem(variableName);
+			if(item==null){
+				//item was not initialized. 
+				localStorage.setItem(variableName, eval(variableName).toString());
+			}else{
+				//item was initialized. 
+				var myValue=null;
+				try{
+					//is it an int?
+					myValue = parseInt( item); 
+					eval(variableName+' = myValue;');
+				}catch(e){
+					//not an int.. 
+					try{
+						//how about float?
+						myValue = parseFloat( item);
+						eval(variableName+' = myValue;');
+					}catch(e){
+						eval(variableName+' = item;');
+					}
+				}//value is not int.. 
+			}
+			/* next case: dict-type data: */
+		}else if( varType=='object'){
+			//check for keys..
+			var myKeys = eval('Object.keys('+variableName+');');
+			/* calculate a histogram on the types of keyed data: */
+			var myCount = {};
+			for(var i=0; i<myKeys.length; i++){
+				var valType = eval('typeof(myKeys[i]);');
+				if( myCount[valType]){
+					myCount[valType]+=1;
+				}else{
+					myCount[valType]=1;
+				}
+			}
+			if( myCount.length >1){
+				console.log('Error: more than one key type detected.');
+
+				
+			}else{
+				console.log('Note: detected one type of key.');
+				/* 
+					>	varInit('gridContent')
+					<   memory.html:117 Note: detected one type of key.
+					
+					
+					> varInit('puzzlePieceData')
+					< memory.html:117 Note: detected one type of key.
+
+				.. now we need to differentiate according to the two types... */
+			}
+		}else{
+			console.log('Non-supported type: ',varType);
+		}
 	}
-      /* next case: dict-type data: */
-      }else if( varType=='object'){
-	//check for keys..
-	var myKeys = eval('Object.keys('+variableName+');');
-	/* calculate a histogram on the types of keyed data: */
-	var myCount = {};
-	for(var i=0; i<myKeys.length; i++){
-	  var valType = eval('typeof(myKeys[i]);');
-	  if( myCount[valType]){
-	    myCount[valType]+=1;
-	  }else{
-	    myCount[valType]=1;
-	  }
-	}
-	if( myCount.length >1){
-	  console.log('Error: more than one key type detected.');
-	}else{
-	  console.log('Note: detected one type of key.');
-	}
-	/* .. now we need to differentiate according to the two types... */
-      }
-      else{
-	console.log('Non-supported type: ',varType);
-      }
-      
-  }
   
   /* transfer inMemory variable to localStorage.. */
-  function varSave(variableName){
-    var varType =eval('typeof('+variableName+')');
-    if( varType == 'string' || varType == 'number'){
-      //leaf type of object..
-      var item = localStorage.setItem(variableName, eval(variableName).toString());
-    }
-  }
-  var progIter = 0;
-  varInit('progIter');
-  document.getElementById("h1").innerHTML = "Recognition Memory Experiment Framework (iter="+progIter.toString()+")";
-  progIter++;
-  varSave('progIter');
-  
-  
+	function varSave(variableName){
+		var varType =eval('typeof('+variableName+')');
+		if( varType == 'string' || varType == 'number'){
+			//leaf type of object..
+			var item = localStorage.setItem(variableName, eval(variableName).toString());
+		}
+	}
+	var progIter = 0;
+	varInit('progIter');
+	document.getElementById("h1").innerHTML = "Recognition Memory Experiment Framework (iter="+progIter.toString()+")";
+	progIter++;
+	varSave('progIter');
+ 
  
   /* keep hooks to our html5 canvas, and canvas.context.. */
   var canvas, ctx; 
@@ -175,7 +182,7 @@ Supported Schema:
   function inverseColor( rgbColor){
     /*Return the string for the complementary inverse color, 
     for a color string of the format:
-      rgb(230,226,224)
+      rgb(230,226,224) 
     */
     var values = (rgbColor.slice(4, rgbColor.length-1)).split(',');
     /* should now have a string array like this:
@@ -184,7 +191,7 @@ Supported Schema:
     for( var i=0; i<3; i++){
       s+= (255-parseInt(values[i])).toString();
       if( i<2){
-	s+=',';
+				s+=',';
       }
     }
     return(s+')'); 
@@ -215,23 +222,23 @@ Supported Schema:
     for (var i = 0; i < pix.length; i+=4) {
       /* Use (1/nSkip) of the image pixels. */
       if( i%nSkip==0){
-	var r = 1.*pix[i  ];//red
-	var g = 1.*pix[i+1];//green
-	var b = 1.*pix[i+2];//blue
-	avgColor[0]+=r; avgColor[1]+=g; avgColor[2]+=b; 
-	nn+=1.; /* keep track of the number of elements in the sample. */
-      }/* Note: pix[i+3] is 'alpha' (the fourth element) */
-    }
+				var r = 1.*pix[i  ];//red
+				var g = 1.*pix[i+1];//green
+				var b = 1.*pix[i+2];//blue
+				avgColor[0]+=r; avgColor[1]+=g; avgColor[2]+=b; 
+				nn+=1.; /* keep track of the number of elements in the sample. */
+			}/* Note: pix[i+3] is 'alpha' (the fourth element) */
+		}
     /* divide by sample mean to get an approximation of the average: */
     avgColor[0]/=nn;avgColor[1]/=nn; avgColor[2]/=nn;
     /* calculate the inverted colour. */
     invColor = 'rgb(' 
-		+(255-Math.floor(avgColor[0])).toString() +','
-		+(255-Math.floor(avgColor[1])).toString() +','
-		+(255-Math.floor(avgColor[2])).toString() 
-		+')'; 
+			+(255-Math.floor(avgColor[0])).toString() +','
+			+(255-Math.floor(avgColor[1])).toString() +','
+			+(255-Math.floor(avgColor[2])).toString() 
+			+')'; 
     avgColor = inverseColor( invColor);//represent the original in the same format. 
-  }
+  } //img.onload = function() 
 
   ctx.width = 800; 
   ctx.height= 800; 
@@ -316,68 +323,69 @@ Supported Schema:
         onUpdate(kb);//alert(key);
       }
       if( unicode ==16){
-	shiftKey =true; 
+				shiftKey =true; 
       }
       if( selectedItem!=''){
-	//console.log('Selected item!!!!');
-	var myName = gridContent[ selectedItem];
-	var curText = (puzzlePieceData[myName])['text'];
-        var newValue = String.fromCharCode(unicode);
-	if( unicode==8){
-	  /* backSpace (need to add other 'control' characters..) */
-	  if( curText.length >1){
-	    curText = curText.slice(0, curText.length-1);
-	  }
-	}else{
-	  //var gridCoords = toPair( selectedItem);
+				//console.log('Selected item!!!!');
+				var myName = gridContent[ selectedItem];
+				var curText = (puzzlePieceData[myName])['text'];
+							var newValue = String.fromCharCode(unicode);
+				if( unicode==8){
+					/* backSpace (need to add other 'control' characters..) */
+					if( curText.length >1){
+						curText = curText.slice(0, curText.length-1);
+					}
+				}else{
+					//var gridCoords = toPair( selectedItem);
 
-	  if( unicode ==13){
-	    newValue = '\n';
-	    /* right now enter doesn't effectively do anything. 
-		(would have to modify the wrapText method). 
-	    */
-	  }
-	  function reMap(u,newVal, shiftVal){
-	    var ret = newValue; 
-	    if(unicode==u){
-	      ret = newVal; 
-	      if(shiftKey){
-		ret = shiftVal; 
-	      }
-	    }return(ret);
-	  }
-	  newValue= reMap(190,  '.',  '>');
-	  newValue= reMap(188,  ',',  '<'); //might need to  
-	  newValue= reMap(186,  ';',  ':');
-	  newValue= reMap(222,  "'",  '"');
-	  newValue= reMap(191,  '/',  '?');
-	  newValue= reMap(219,  '[',  '{');
-	  newValue= reMap(221,  ']',  '}');
-	  newValue= reMap(220,  "\\", '|'); //might need to disable backslash later. 
-	  newValue= reMap(221,  ']',  '}');
- 	  newValue= reMap(192,  '`',  '~');
-	  newValue= reMap( 49,  '1',  '!');
-  	  newValue= reMap( 50,  '2',  '@');    
- 	  newValue= reMap( 51,  '3',  '#');
- 	  newValue= reMap( 52,  '4',  '$');
- 	  newValue= reMap( 53,  '5',  '%');
- 	  newValue= reMap( 54,  '6',  '^');
- 	  newValue= reMap( 55,  '7',  '&');
- 	  newValue= reMap( 56,  '8',  '*');
- 	  newValue= reMap( 57,  '9',  '(');
- 	  newValue= reMap( 48,  '0',  ')');
- 	  newValue= reMap(189,  '-',  '_');
- 	  newValue= reMap(187,  '=',  '+');
-	  if( shiftKey ){
-	    newValue = (newValue.toString()).toUpperCase();
-	  }else{
-	    newValue = (newValue.toString()).toLowerCase();
-	  }
-	  curText+= newValue.toString(); //unicode.toString();
-	}
-	(puzzlePieceData[myName])['text']=curText;
-      }
-    }
+					if( unicode ==13){
+						newValue = '\n';
+						/* right now enter doesn't effectively do anything. 
+					(would have to modify the wrapText method). 
+						*/
+					}
+					function reMap(u,newVal, shiftVal){
+						var ret = newValue; 
+						if(unicode==u){
+							ret = newVal; 
+							if(shiftKey){
+								ret = shiftVal; 
+							}
+						}
+						return(ret);
+					}
+					newValue= reMap(190,  '.',  '>');
+					newValue= reMap(188,  ',',  '<'); //might need to  
+					newValue= reMap(186,  ';',  ':');
+					newValue= reMap(222,  "'",  '"');
+					newValue= reMap(191,  '/',  '?');
+					newValue= reMap(219,  '[',  '{');
+					newValue= reMap(221,  ']',  '}');
+					newValue= reMap(220,  "\\", '|'); //might need to disable backslash later. 
+					newValue= reMap(221,  ']',  '}');
+					newValue= reMap(192,  '`',  '~');
+					newValue= reMap( 49,  '1',  '!');
+					newValue= reMap( 50,  '2',  '@');    
+					newValue= reMap( 51,  '3',  '#');
+					newValue= reMap( 52,  '4',  '$');
+					newValue= reMap( 53,  '5',  '%');
+					newValue= reMap( 54,  '6',  '^');
+					newValue= reMap( 55,  '7',  '&');
+					newValue= reMap( 56,  '8',  '*');
+					newValue= reMap( 57,  '9',  '(');
+					newValue= reMap( 48,  '0',  ')');
+					newValue= reMap(189,  '-',  '_');
+					newValue= reMap(187,  '=',  '+');
+					if( shiftKey ){
+						newValue = (newValue.toString()).toUpperCase();
+					}else{
+						newValue = (newValue.toString()).toLowerCase();
+					}
+					curText+= newValue.toString(); //unicode.toString();
+				}
+				(puzzlePieceData[myName])['text']=curText;
+			}
+		}
     /* handler for key up event.. */
     document.onkeyup = function(e) {
       var unicode = e.charCode ? e.charCode : e.keyCode
@@ -388,9 +396,9 @@ Supported Schema:
         onUpdate(kb);
       }
 
-       if( unicode ==16){
-	shiftKey =false; 
-      }
+			if( unicode ==16){
+				shiftKey =false; 
+			}
     }
     /* function to check the keyboard state.. */
     function getKey(unicode) {
