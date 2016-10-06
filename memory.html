@@ -71,6 +71,8 @@ Supported Schema:
   function varInit(variableName){  /* init variable, but restore if not already defined... */
       /* Don't wipe any keys that are in there..*/
       var varType =eval('typeof('+variableName+')');
+      
+      /* First case: "leaf" type data:.. */
       if( varType == 'string' || varType == 'number'){
 	//leaf type of object..
 	var item = localStorage.getItem(variableName);
@@ -95,9 +97,26 @@ Supported Schema:
 	    }
 	  }//value is not int.. 
 	}
-	
+      /* next case: dict-type data: */
       }else if( varType=='object'){
-	//check for keys.. 
+	//check for keys..
+	var myKeys = eval('Object.keys('+variableName+');');
+	/* calculate a histogram on the types of keyed data: */
+	var myCount = {};
+	for(var i=0; i<myKeys.length; i++){
+	  var valType = eval('typeof(myKeys[i]);');
+	  if( myCount[valType]){
+	    myCount[valType]+=1;
+	  }else{
+	    myCount[valType]=1;
+	  }
+	}
+	if( myCount.length >1){
+	  console.log('Error: more than one key type detected.');
+	}else{
+	  console.log('Note: detected one type of key.');
+	}
+	/* .. now we need to differentiate according to the two types... */
       }
       else{
 	console.log('Non-supported type: ',varType);
