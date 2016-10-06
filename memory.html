@@ -170,21 +170,79 @@ title="invert" class="invert"   (put that in img section, to invert the image...
     return !(e.keyCode == 32);
   };
 
+  /* Check if a string (or character) is all upper case. */
+  function allUpperCase(s){
+    var ss = s.toString();
+    return( ss == ss.toUpperCase());
+  }
+
+  
+  var shiftKey = false; 
+  /*
+    
+  */
+
+
   
   function keyboard_module(onUpdate) {
     var kb = {};
     var unicode_mapping = {};
-    /* handler for key down event.. override automatic key repeats!*/
+    /* handler for key down event.. override automatic key repeats!
+    
+	With the exception of BACKSPACE.. !!!
+    */
     document.onkeydown = function(e) {
       //console.log( 'key code: '+ (e.keyCode).toString()+ ' charCode: '+(e.charCode).toString()); 
       var unicode = e.charCode ? e.charCode : e.keyCode
       var key = getKey(unicode);
-      if(lastKeyPressed!='' && (lastKeyPressed==key)){
+      if(lastKeyPressed!='' && (lastKeyPressed==key) && ( unicode!=8)){
         return;
-      }lastKeyPressed =key;
+      }
+      console.log('unicode: ',unicode)
+      lastKeyPressed =key;
       kb[key] = true;
       if (onUpdate) {
         onUpdate(kb);//alert(key);
+      }
+      if( unicode ==16){
+	shiftKey =true; 
+      }
+      if( selectedItem!=''){
+	//console.log('Selected item!!!!');
+	var myName = gridContent[ selectedItem];
+	var curText = (puzzlePieceData[myName])['text'];
+        var newValue = String.fromCharCode(unicode);
+	if( unicode==8){
+	  /* backSpace (need to add other 'control' characters..) */
+	  if( curText.length >1){
+	    curText = curText.slice(0, curText.length-1);
+	  }
+	}else{
+	  //var gridCoords = toPair( selectedItem);
+
+	  if( unicode ==13){
+	    newValue = '\n';
+	    /* right now enter doesn't effectively do anything. 
+		(would have to modify the wrapText method). 
+	    */
+	  }
+	  if( unicode==190){
+	    newValue = '.';
+	  }
+	  if(unicode==191){
+	    newValue = '/';
+	    if( shiftKey){
+	      newValue = '?';
+	    }
+	  }
+	  if( shiftKey  ){
+	    newValue = (newValue.toString()).toUpperCase();
+	  }else{
+	    newValue = (newValue.toString()).toLowerCase();
+	  }
+	  curText+= newValue.toString(); //unicode.toString();
+	}
+	(puzzlePieceData[myName])['text']=curText;
       }
     }
     /* handler for key up event.. */
@@ -196,19 +254,9 @@ title="invert" class="invert"   (put that in img section, to invert the image...
       if (onUpdate) {
         onUpdate(kb);
       }
-      if( selectedItem!=''){
-	//console.log('Selected item!!!!');
-	
-	if( e.charCode==8){
-	  /* backSpace (need to add other 'control' characters..) */
-	}else{
-	  //var gridCoords = toPair( selectedItem);
-	  var myName = gridContent[ selectedItem];
-	  var curText = (puzzlePieceData[myName])['text'];
-	  curText+= String.fromCharCode(unicode); //unicode.toString();
-	  (puzzlePieceData[myName])['text']=curText;
-	  
-	}
+
+       if( unicode ==16){
+	shiftKey =false; 
       }
     }
     /* function to check the keyboard state.. */
@@ -384,7 +432,7 @@ function drawPiece(aTransX,aTransY, /* <-translation offset.. */ pw,ph /* <-puzz
       ctx.fillText(lines[j].text, transX, lines[j].height+ startY);
     }
   }
-  var myString = (gridContent[cI].toString())+':'+(puzzlePieceData[gridContent[cI]])['text'];
+  var myString = /*(gridContent[cI].toString())+':'+*/ (puzzlePieceData[gridContent[cI]])['text'];
   wrapText( myString, transY+15, isSelected); 
   
   
