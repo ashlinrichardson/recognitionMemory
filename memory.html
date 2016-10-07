@@ -641,7 +641,7 @@ function drawPiece(aTransX,aTransY, /* <-translation offset.. */ pw,ph /* <-puzz
     var lineTest = '';
     var fontSize = 11;
     ctx.font = fontSize +"px Arial";
-    ctx.fillStyle = isSelected?inverseColor(myFillColor):myFillColor;//invColor:avgColor;//'blue';
+    ctx.fillStyle = isSelected?myFillColor:inverseColor(myFillColor);//invColor:avgColor;//'blue';
     
     for(var j=0; j<words.length; j++){
       lineTest = line + words[j] + ' ';
