@@ -11,7 +11,7 @@ html {
 
 @font-face {
   font-family: Myriad;
-  src: url('http://web.uvic.ca/~ashy/memory/MyriadBlack.otf');
+  src: url('MyriadBlack.otf');
 }
 
 h1 {  font-family: Myriad; 
