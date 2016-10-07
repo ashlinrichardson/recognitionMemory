@@ -583,14 +583,7 @@ function drawPiece(aTransX,aTransY, /* <-translation offset.. */ pw,ph /* <-puzz
   var puzCoords = toPair( cI);
   var transX = aTransX; 
   var transY = aTransY;
-  
-  /*if(isSelected){
-    var parts = selectedItem.split(',');
-    transX -=( selectedX[0] - 100*parseInt(parts[0]));
-    transY -=( selectedX[1] - 100*parseInt(parts[1]));
-  }
-  */
-  
+   
   ctx.lineWidth=0.5;
   ctx.strokeStyle='blue';
   var sizeP = ph;//100; 
@@ -648,7 +641,7 @@ function drawPiece(aTransX,aTransY, /* <-translation offset.. */ pw,ph /* <-puzz
     var lineTest = '';
     var fontSize = 11;
     ctx.font = fontSize +"px Arial";
-    ctx.fillStyle = isSelected?invColor:avgColor;//'blue';
+    ctx.fillStyle = isSelected?inverseColor(myFillColor):myFillColor;//invColor:avgColor;//'blue';
     
     for(var j=0; j<words.length; j++){
       lineTest = line + words[j] + ' ';
