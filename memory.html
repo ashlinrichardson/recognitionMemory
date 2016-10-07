@@ -599,8 +599,43 @@ function drawPiece(aTransX,aTransY, /* <-translation offset.. */ pw,ph /* <-puzz
   ctx.closePath();
   var myFillColor=''; 
   if( puzCoords[0]==7){
-		myFillColor=/*ctx.fillStyle=*/ hsv2rgb((360/8.)*puzCoords[1],1,1);
+		
+		myFillColor=/*ctx.fillStyle=*/ hsv2rgb((360/8.)*((puzCoords[1]+3)),1,1);
 		(puzzlePieceData[gridContent[cI]])['color']=myFillColor;
+		
+		function assignTypeString(val) {
+			var answer = "";
+			switch( val ) {
+			case 0: 
+				return("INSTRUCTIONS");
+				break;
+			case 1: 
+				return("RESPONSE");
+				break;
+			case 2: 
+				return("DELAY");
+				break;
+			case 3: 
+				return("STUDY-PHASE");
+				break;
+			case 4: 
+				return("TEST-PHASE");
+				break;
+			Default:
+				return(null);//answer = "Massive or Tiny?";
+			} 
+			return answer;  
+		}
+		if( puzCoords[1] <=4 ){
+			(puzzlePieceData[gridContent[cI]])['type']=assignTypeString(puzCoords[1]);
+		}
+		else{
+			(puzzlePieceData[gridContent[cI]])['type']=null;//assignTypeString(puzCoords[1]);
+			myFillColor=/*ctx.fillStyle=*/ (isSelected==true)?avgColor:invColor;//inverseColor(invColor);
+			(puzzlePieceData[gridContent[cI]])['color']=invColor;
+			
+		}
+		
   }else{
 		myFillColor=/*ctx.fillStyle=*/ (isSelected==true)?avgColor:invColor;//inverseColor(invColor);
 		var savedColor =(puzzlePieceData[gridContent[cI]])['color'];
@@ -611,7 +646,7 @@ function drawPiece(aTransX,aTransY, /* <-translation offset.. */ pw,ph /* <-puzz
 				(puzzlePieceData[gridContent[cI]])['color'] = savedColor;
 			}
 		}
-		console.log('savedColor', savedColor);
+		//console.log('savedColor', savedColor);
 		if(savedColor ){
 
 			myFillColor=(isSelected==true)?inverseColor(savedColor):savedColor;
@@ -631,6 +666,7 @@ function drawPiece(aTransX,aTransY, /* <-translation offset.. */ pw,ph /* <-puzz
   ctx.strokeStyle='green';
   ctx.stroke();
   
+  var fontSize = 11;
   /* Now, draw the text content..  */
   function wrapText(str, startY, isSelected){  //with some help from ashblue
     var words = str.split(" ");
@@ -639,10 +675,14 @@ function drawPiece(aTransX,aTransY, /* <-translation offset.. */ pw,ph /* <-puzz
     var line = '';
     var lines = [ ] ;
     var lineTest = '';
-    var fontSize = 11;
-    ctx.font = fontSize +"px Arial";
-    ctx.fillStyle = isSelected?myFillColor:inverseColor(myFillColor);//invColor:avgColor;//'blue';
     
+    ctx.font = fontSize +"px Arial";
+    ctx.fillStyle = (isSelected)?invColor:avgColor;
+    try{
+			//ctx.fillStyle = (isSelected)?inverseColor(myFillColor):myFillColor;//invColor:avgColor;//'blue';
+    }catch(e){
+			ctx.fillStyle = (isSelected)?invColor:avgColor;
+    }
     for(var j=0; j<words.length; j++){
       lineTest = line + words[j] + ' ';
       if( ctx.measureText(lineTest).width > 100){
@@ -665,7 +705,14 @@ function drawPiece(aTransX,aTransY, /* <-translation offset.. */ pw,ph /* <-puzz
     }
   }
   var myString = (puzzlePieceData[gridContent[cI]])['text'];
-  wrapText( myString, transY+15, isSelected); 
+  var myType = (puzzlePieceData[gridContent[cI]])['type'];
+  if( myType ){
+		wrapText( myType.toString()+":", transY+15, isSelected);
+		wrapText( myString, fontSize+transY+15, isSelected); 
+  }else{
+		wrapText( myString, +transY+15, isSelected); 
+  }
+  
   
   
 }
