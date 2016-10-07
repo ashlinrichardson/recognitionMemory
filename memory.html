@@ -415,7 +415,8 @@ function hexToRgb(hex) {
 				//console.log('Selected item!!!!');
 				var myName = gridContent[ selectedItem];
 				var curText = (puzzlePieceData[myName])['text'];
-							var newValue = String.fromCharCode(unicode);
+				if( !curText){ curText = '';}
+				var newValue = String.fromCharCode(unicode);
 				if( unicode==8){
 					/* backSpace (need to add other 'control' characters..) */
 					if( curText.length >1){
@@ -668,7 +669,7 @@ function drawPiece(aTransX,aTransY, /* <-translation offset.. */ pw,ph /* <-puzz
   
   var fontSize = 11;
   /* Now, draw the text content..  */
-  function wrapText(str, startY, isSelected){  //with some help from ashblue
+  function wrapText(str, startY, isSelected, isBold){  //with some help from ashblue
     var words = str.split(" ");
     var myX = 10;
     var myY = 50;
@@ -677,6 +678,9 @@ function drawPiece(aTransX,aTransY, /* <-translation offset.. */ pw,ph /* <-puzz
     var lineTest = '';
     
     ctx.font = fontSize +"px Arial";
+    if(isBold){
+			ctx.font = "Bold Italic "+ctx.font;
+    }
     ctx.fillStyle = (isSelected)?invColor:avgColor;
     try{
 			//ctx.fillStyle = (isSelected)?inverseColor(myFillColor):myFillColor;//invColor:avgColor;//'blue';
@@ -707,10 +711,10 @@ function drawPiece(aTransX,aTransY, /* <-translation offset.. */ pw,ph /* <-puzz
   var myString = (puzzlePieceData[gridContent[cI]])['text'];
   var myType = (puzzlePieceData[gridContent[cI]])['type'];
   if( myType ){
-		wrapText( myType.toString()+":", transY+15, isSelected);
-		wrapText( myString, fontSize+transY+15, isSelected); 
+		wrapText( myType.toString()+":", transY+15, isSelected, true);
+		wrapText( myString, fontSize+transY+15, isSelected,false); 
   }else{
-		wrapText( myString, +transY+15, isSelected); 
+		wrapText( myString, +transY+15, isSelected,false); 
   }
   
   
@@ -903,12 +907,13 @@ if(true){
       pickThis = cI; 
       /* was this item already selected? */
       if( selectedItem ==cI){
-	/* If the picked item was already selected, unselect it. */
-	selectedItem = '';
-      }else{
-	/* If the picked item was not already selected, select it! */
-	selectedItem = cI;
-	/* Track the starting mouse position for the selection 
+				/* If the picked item was already selected, unselect it. */
+				selectedItem = '';
+			}else{
+				/* If the picked item was not already selected, select it! */
+				selectedItem = cI;
+				console.log('selectedItem.color:',(puzzlePieceData[gridContent[cI]])['color']);
+		/* Track the starting mouse position for the selection 
 	    .. the idea was to use this as an "offset", later. 
 	*/
 	selectedX = [mx, my]; 
