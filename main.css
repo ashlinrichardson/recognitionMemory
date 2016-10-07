@@ -5,6 +5,14 @@ html {
   -o-background-size: cover;
   -webkit-background-size: cover;
 }
+
+body {
+    margin: 27px 27px 0;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+
 #canvasID{
     opacity:0.9;
 }
