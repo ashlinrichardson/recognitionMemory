@@ -52,6 +52,33 @@ var hsv2rgb = function(h,s,v) { /*   var h = hsv.hue, s = hsv.sat, v = hsv.val; 
   }).join('');
 };
 
+/* 
+Color conversion.....from 
+	http://stackoverflow.com/questions/5623838/rgb-to-hex-and-hex-to-rgb
+
+The following will do to the RGB to hex conversion and add any required zero padding: 
+*/
+function componentToHex(c) {
+    var hex = c.toString(16);
+    return hex.length == 1 ? "0" + hex : hex;
+}  //alert( rgbToHex(0, 51, 255) );    
+
+function rgbToHex(r, g, b) {
+    return "#" + componentToHex(r) + componentToHex(g) + componentToHex(b);
+}
+
+/* converting in the other direction.... also from:
+	http://stackoverflow.com/questions/5623838/rgb-to-hex-and-hex-to-rgb
+
+*/
+function hexToRgb(hex) {
+    var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+    return result ? {
+        r: parseInt(result[1], 16),
+        g: parseInt(result[2], 16),
+        b: parseInt(result[3], 16)
+    } : null;
+}  /* alert( hexToRgb("#0033ff").g );   */
 
 
 	var canvasHeight = 801;
@@ -498,7 +525,7 @@ function drawLine(x,y,u,v){ //ctx.beginPath();
 /* Draw a puzzle piece that only can have vertical connections. */
 function drawPiece(aTransX,aTransY, /* <-translation offset.. */ pw,ph /* <-puzzle piece dims..*/ , isSelected, cI){ 
   
-  
+  var puzCoords = toPair( cI);
   var transX = aTransX; 
   var transY = aTransY;
   
@@ -522,12 +549,19 @@ function drawPiece(aTransX,aTransY, /* <-translation offset.. */ pw,ph /* <-puzz
   drawUp(transX, transY+sizeP, true, pw);//false);
   ctx.setTransform(1,0,0,1,0,0);
   ctx.closePath();
-  if( isSelected==true){
-    ctx.fillStyle = avgColor;//inverseColor(invColor);
+  var myFillColor=''; 
+  if( puzCoords[0]==7){
+		myFillColor=/*ctx.fillStyle=*/ hsv2rgb((360/8.)*puzCoords[1],1,1);
+		(puzzlePieceData[gridContent[cI]])['color']=myFillColor;
   }else{
-    ctx.fillStyle =invColor;//'#8ED6FF';
-   }
-  //console.log(invColor, inverseColor(invColor));
+		myFillColor=/*ctx.fillStyle=*/ (isSelected==true)?avgColor:invColor;//inverseColor(invColor);
+		var savedColor =(puzzlePieceData[gridContent[cI]])['color'];
+		if(savedColor ){
+			myFillColor=(isSelected==true)?savedColor:inverseColor( savedColor);
+		}
+	} 
+	ctx.fillStyle=myFillColor;
+
   ctx.fill();
   
   /* draw the picking area.. MAYBE only draw this when the piece is highlighted!!! */
@@ -555,11 +589,11 @@ function drawPiece(aTransX,aTransY, /* <-translation offset.. */ pw,ph /* <-puzz
     for(var j=0; j<words.length; j++){
       lineTest = line + words[j] + ' ';
       if( ctx.measureText(lineTest).width > 100){
-	myY = lines.length * fontSize + fontSize;
-	lines.push( {text: line, height: myY});
-	line = words[j] + ' ';
+				myY = lines.length * fontSize + fontSize;
+				lines.push( {text: line, height: myY});
+				line = words[j] + ' ';
       }else{
-	line = lineTest; 
+				line = lineTest; 
       }        
     } 
     // Catch last line in-case something is left over
@@ -573,7 +607,7 @@ function drawPiece(aTransX,aTransY, /* <-translation offset.. */ pw,ph /* <-puzz
       ctx.fillText(lines[j].text, transX, lines[j].height+ startY);
     }
   }
-  var myString = /*(gridContent[cI].toString())+':'+*/ (puzzlePieceData[gridContent[cI]])['text'];
+  var myString = (puzzlePieceData[gridContent[cI]])['text'];
   wrapText( myString, transY+15, isSelected); 
   
   
