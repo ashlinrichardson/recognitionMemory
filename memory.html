@@ -9,10 +9,39 @@
 </head>
 
 <body>
+
 <canvas id="canvasID" width="800" height="800">Error: HTML5 canvas unupported.</canvas>
+
+<script>
+function forEachKey(callback) {
+  for (var i = 0; i < localStorage.length; i++) {
+    callback(localStorage.key(i));
+  }
+}
+</script>
+
+
+<input type="button" value="clear localStorage" onclick="/*localStorage.clear();*/"/>
+
+
 <script>  
 
-/* standard hsv to rgb conversion... 
+
+/*
+
+
+<select name="element">
+  <option value="button">Button</option>
+  <option value="text">Textbox</option>
+  <option value="radio">Radio</option>
+</select>
+
+<input type="button" value="Add" onclick="alert('hi');"/>
+
+
+
+
+standard hsv to rgb conversion... 
 
 h is in range [0--> 60]..... 
 s, v are in range [0,1]...
@@ -22,29 +51,18 @@ var hsv2rgb = function(h,s,v) { /*   var h = hsv.hue, s = hsv.sat, v = hsv.val; 
   var rgb, i, data = [];
   if (s === 0) {
     rgb = [v,v,v];
-  } else {
+  }
+  else{
     h = h / 60;
     i = Math.floor(h);
     data = [v*(1-s), v*(1-s*(h-i)), v*(1-s*(1-(h-i)))];
     switch(i) {
-      case 0:
-        rgb = [v, data[2], data[0]];
-        break;
-      case 1:
-        rgb = [data[1], v, data[0]];
-        break;
-      case 2:
-        rgb = [data[0], v, data[2]];
-        break;
-      case 3:
-        rgb = [data[0], data[1], v];
-        break;
-      case 4:
-        rgb = [data[2], data[0], v];
-        break;
-      default:
-        rgb = [v, data[0], data[1]];
-        break;
+      case 0:	 rgb= [v, data[2], data[0]]; break;
+      case 1:  rgb= [data[1], v, data[0]]; break;
+      case 2:  rgb= [data[0], v, data[2]]; break;
+      case 3:  rgb= [data[0], data[1], v]; break;
+      case 4:  rgb= [data[2], data[0], v]; break;
+      default: rgb= [v, data[0], data[1]]; break;
     }
   }
   return '#' + rgb.map(function(x){ 
@@ -52,8 +70,7 @@ var hsv2rgb = function(h,s,v) { /*   var h = hsv.hue, s = hsv.sat, v = hsv.val; 
   }).join('');
 };
 
-/* 
-Color conversion.....from 
+/*  Color conversion.....from 
 	http://stackoverflow.com/questions/5623838/rgb-to-hex-and-hex-to-rgb
 
 The following will do to the RGB to hex conversion and add any required zero padding: 
@@ -61,8 +78,7 @@ The following will do to the RGB to hex conversion and add any required zero pad
 function componentToHex(c) {
     var hex = c.toString(16);
     return hex.length == 1 ? "0" + hex : hex;
-}  //alert( rgbToHex(0, 51, 255) );    
-
+}  
 function _rgbToHex(r, g, b) {
     return "#" + componentToHex(r) + componentToHex(g) + componentToHex(b);
 }
@@ -146,7 +162,7 @@ function hexToRgb(hex) {
  } 
   /* 
   
-  gridContent	<--- this variable indicates if the grid square:  
+			gridContent	<--- this variable indicates if the grid square:  
 			at location:  
 					'(' + i.toString() +',' + j.toString() + ')'   (***) 
       is occupied. 
@@ -748,20 +764,22 @@ function drawGrid(cw, ch){
   /* Randomly initialize puzzle piece elements on the grid (for now).. 
 	Change this later.. 
   */
+  if( progIter<1){
   for( var i =0; i<=cw/100; i++){
     for(var j=0; j<=ch/100; j++){
       var cI = i.toString()+'-'+j.toString();
       if( cI in gridContent){
-	//pass
+				//pass
       }else{
-	if( Math.random()<.4){////if( i%3==0 || j%==0){
-	  gridContent[cI]=(nextPuzzlePieceName++);
-	}else{
-	  gridContent[cI]=-1;
-	}
+				if( Math.random()<.4){////if( i%3==0 || j%==0){
+					gridContent[cI]=(nextPuzzlePieceName++);
+				}else{
+					gridContent[cI]=-1;
+				}
       }
     }
   }
+ }
  ctx.globalAlpha = 1.;
 }
 
@@ -802,7 +820,7 @@ drawGridContent();
 	.. but now, we need to adjust that statement, because we would like to 
 		initialize the variables schema, in order to dump data into them.. 
 */
-if(true){
+if(progIter>0){
 	varInit('gridContent');
 	varInit('puzzlePieceData');   //next, use JSON.stringify() and JSON.parse()
 	/*
@@ -885,7 +903,7 @@ if(true){
       ni = document.createNodeIterator(document.documentElement, NodeFilter.SHOW_ELEMENT);
 
       while(currentNode = ni.nextNode()) {
-	console.log(currentNode.nodeName);
+				console.log(currentNode.nodeName);
       }
     }
     
@@ -894,7 +912,7 @@ if(true){
   };
   
   /* Mouse button down event */
-   canvas.addEventListener("mousedown", function(e){  /* e.clientX, e.clientY */
+  canvas.addEventListener("mousedown", function(e){  /* e.clientX, e.clientY */
     /* mouse down event listener code... */ 
     var loc = windowToCanvas(canvas, e.clientX, e.clientY);
     mx = loc.x;
@@ -913,10 +931,10 @@ if(true){
 				/* If the picked item was not already selected, select it! */
 				selectedItem = cI;
 				console.log('selectedItem.color:',(puzzlePieceData[gridContent[cI]])['color']);
-		/* Track the starting mouse position for the selection 
-	    .. the idea was to use this as an "offset", later. 
-	*/
-	selectedX = [mx, my]; 
+				/* Track the starting mouse position for the selection 
+					.. the idea was to use this as an "offset", later. 
+				*/
+				selectedX = [mx, my]; 
       }
     }
     
