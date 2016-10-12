@@ -11,6 +11,14 @@
 div.backupBoxes{
 	opacity:0.64;
 }
+
+div.stimulusPools{
+	opacity:0.97;
+}
+div.radioButtons{
+	  background-color: lightgray;
+		opacity:0.89;
+	  }
 </style>
 
 
@@ -18,8 +26,74 @@ div.backupBoxes{
 
 <canvas id="canvasID" width="800" height="800">Error: HTML5 canvas unupported.</canvas>
 
-<script>
+
+
+<br>
+
+
+
+
+<div class="stimulusPools">
+
+<br>
+
+<div class="radioButtons" style="width: 800px; "> 
+Time limit    (mS)   <input type="number" name="isi" min="0" max="10000" step="1000" value="0">
+Time interval (mS) <input type="number" name="set" min="0" max="10000" step="1000" value="0">
+<br>
+ 
+N: <input type="number" name="p1n" min="0" max="100" step="1" value="30">
+M: <input type="number" name="p1m" min="0" max="100" step="1" value="30">
+
+<input type="radio" id = "p1on" name = "p1" onchange="p1on();"  checked=false><label for="p1on">pool1 on</label>   
+<input type="radio" id = "p1of" name = "p1" onchange="p1on();"  checked=true><label for="p1of"> off</label>    
+<script type="text/javascript">
+  function p1on() {
+			var e = document.getElementById('p1on');
+			console.log( e.checked);		
+		}
 </script>
+
+
+N: <input type="number" name="p2n" min="0" max="100" step="1" value="30">
+M: <input type="number" name="p2m" min="0" max="100" step="1" value="30">
+
+<input type="radio" id = "p2on" name = "p2" onchange="p2on();"  checked=false><label for="p2on">pool2 on</label>
+<input type="radio" id = "p2of" name = "p2" onchange="p2on();"  checked=true><label for="p2of"> off</label>
+<script type="text/javascript">
+  function p2on() {
+			var e = document.getElementById('p2on');
+			console.log( e.checked);		
+		}
+</script>
+
+N: <input type="number" name="p3n" min="0" max="100" step="1" value="30">
+M: <input type="number" name="p3m" min="0" max="100" step="1" value="30">
+
+<input type="radio" id = "p3on" name = "p3" onchange="p3on();"  checked=false><label for="p3on">pool3 on</label>
+<input type="radio" id = "p3of" name = "p3" onchange="p3on();"  checked=true><label for="p3of"> off</label>
+<script type="text/javascript">
+  function p3on() {
+			var e = document.getElementById('p3on');
+			console.log( e.checked);		
+		}
+</script>
+
+
+
+</div>
+
+
+<textarea rows="7" cols="30" id="stimulusBox1" value = ""></textarea> 
+<input type="button" value="default" class="stimPooldefault1" onclick=""/>
+
+<textarea rows="7" cols="30" id="stimulusBox2" value = ""></textarea> 
+<input type="button" value="default" class="stimPooldefault2" onclick=""/>
+
+<textarea rows="7" cols="30" id="stimulusBox3" value = ""></textarea> 
+<input type="button" value="default" class="stimPooldefault3" onclick=""/>
+</div>
+
 
 <br>
 <div class="backupBoxes">
@@ -30,6 +104,20 @@ div.backupBoxes{
 </div>
 
 <script>  
+
+	function togglePool1(){
+		alert('hi');
+			var e = document.getElementById("pool1"); e.value = !e.value;	
+		}
+			function togglePool2(){
+			var e = document.getElementById("pool2"); e.value = !e.value;	
+		}
+			function togglePool3(){
+			var e = document.getElementById("pool3"); e.value = !e.value;	
+		}
+		
+		
+		
 var refreshId=false; 
 var gridContent;
 var puzzlePieceData;
@@ -494,7 +582,7 @@ function hexToRgb(hex) {
 				var newValue = String.fromCharCode(unicode);
 				if( unicode==8){
 					/* backSpace (need to add other 'control' characters..) */
-					if( curText.length >1){
+					if( curText.length >0){
 						curText = curText.slice(0, curText.length-1);
 					}
 				}else{
