@@ -1000,6 +1000,7 @@ if(progIter>0){
 				/* If the picked item was not already selected, select it! */
 				selectedItem = cI;
 				try{
+					/* log the colour of the selected item (if something is selected)... */
 					var selectedItemColor = (puzzlePieceData[gridContent[cI]])['color'];
 					if(selectedItemColor!=null){
 						console.log('selectedItem.color:',selectedItemColor);
