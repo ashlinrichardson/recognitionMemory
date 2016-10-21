@@ -20,8 +20,8 @@ div.radioButtons{ background-color: lightgray; opacity:0.89;}
 Time limit    (mS)   <input type="number" name="isi" min="0" max="10000" step="1000" value="0">
 Time interval (mS) <input type="number" name="set" min="0" max="10000" step="1000" value="0">
 <br>
-N: <input type="number" name="p1n" min="0" max="100" step="1" value="30">
-M: <input type="number" name="p1m" min="0" max="100" step="1" value="30">
+N: <input type="number" name="p1n" id="p1n" min="0" max="100" step="1" value="30">
+M: <input type="number" name="p1m" id="p1m" min="0" max="100" step="1" value="30">
 
 <input type="radio" id = "p1on" name = "p1" onchange="p1on();"  checked=false><label for="p1on">pool1 on</label>   
 <input type="radio" id = "p1of" name = "p1" onchange="p1on();"  checked=true><label for="p1of"> off</label>   
@@ -58,7 +58,7 @@ M: <input type="number" name="p3m" min="0" max="100" step="1" value="30">
 </script>
 
 <script src="defaultData.js"></script>
-
+<script src="keyboardModule.js"></script>
 
 </div>
 
@@ -79,10 +79,7 @@ M: <input type="number" name="p3m" min="0" max="100" step="1" value="30">
 <input type="radio" id = "q1on" name = "q1" onchange="q1on();"  checked=false><label for="q1on">Question on</label>   
 <input type="radio" id = "q1of" name = "q1" onchange="q1on();"  checked=true><label for="q1of"> off</label>  
 <script type="text/javascript">
-  function q1on() {
-			var e = document.getElementById('q1on');
-			console.log( e.checked);		
-		}
+  function q1on() { var e = document.getElementById('q1on'); console.log( e.checked);		}
 </script>
 </div>
 <textarea rows="7" cols="30" id="questionBox" value = ""></textarea> 
@@ -91,9 +88,6 @@ M: <input type="number" name="p3m" min="0" max="100" step="1" value="30">
 <textarea rows="7" cols="30" id="answerBox" value = ""></textarea> 
 <input type="button" value="default response" class="questionBox" onclick=""/>
 <br>
-
-
-
 </div>
 
 
@@ -111,15 +105,13 @@ M: <input type="number" name="p3m" min="0" max="100" step="1" value="30">
 		alert('hi');
 			var e = document.getElementById("pool1"); e.value = !e.value;	
 		}
-			function togglePool2(){
+		function togglePool2(){
 			var e = document.getElementById("pool2"); e.value = !e.value;	
 		}
-			function togglePool3(){
+		function togglePool3(){
 			var e = document.getElementById("pool3"); e.value = !e.value;	
 		}
-		
-		
-		
+
 var refreshId=false; 
 var gridContent;
 var puzzlePieceData;
@@ -172,9 +164,6 @@ function setDefaultData(){
 	}
 }
 
-
-
-
 /*
 <input type = "text" id="backupBox" value = "" style="width: 300px; height: 400px;"  /> 
 
@@ -185,9 +174,6 @@ function setDefaultData(){
 </select>
 
 <input type="button" value="Add" onclick="alert('hi');"/>
-
-
-
 
 standard hsv to rgb conversion... 
 
@@ -554,121 +540,7 @@ function hexToRgb(hex) {
 
 
   
-  function keyboard_module(onUpdate) {
-    var kb = {};
-    var unicode_mapping = {};
-    /* handler for key down event.. override automatic key repeats!
-    
-	With the exception of BACKSPACE.. !!!
-    */
-    document.onkeydown = function(e) {
-      //console.log( 'key code: '+ (e.keyCode).toString()+ ' charCode: '+(e.charCode).toString()); 
-      var unicode = e.charCode ? e.charCode : e.keyCode
-      var key = getKey(unicode);
-      if(lastKeyPressed!='' && (lastKeyPressed==key) && ( unicode!=8)){
-        return;
-      }
-      console.log('unicode: ',unicode)
-      lastKeyPressed =key;
-      kb[key] = true;
-      if (onUpdate) {
-        onUpdate(kb);//alert(key);
-      }
-      if( unicode ==16){
-				shiftKey =true; 
-      }
-      if( selectedItem!=''){
-				//console.log('Selected item!!!!');
-				var myName = gridContent[ selectedItem];
-				var curText = (puzzlePieceData[myName])['text'];
-				if( !curText){ curText = '';}
-				var newValue = String.fromCharCode(unicode);
-				if( unicode==8){
-					/* backSpace (need to add other 'control' characters..) */
-					if( curText.length >0){
-						curText = curText.slice(0, curText.length-1);
-					}
-				}else{
-					//var gridCoords = toPair( selectedItem);
 
-					if( unicode ==13){
-						newValue = '\n';
-						/* right now enter doesn't effectively do anything. 
-					(would have to modify the wrapText method). 
-						*/
-					}
-					function reMap(u,newVal, shiftVal){
-						var ret = newValue; 
-						if(unicode==u){
-							ret = newVal; 
-							if(shiftKey){
-								ret = shiftVal; 
-							}
-						}
-						return(ret);
-					}
-					newValue= reMap(190,  '.',  '>');
-					newValue= reMap(188,  ',',  '<'); //might need to  
-					newValue= reMap(186,  ';',  ':');
-					newValue= reMap(222,  "'",  '"');
-					newValue= reMap(191,  '/',  '?');
-					newValue= reMap(219,  '[',  '{');
-					newValue= reMap(221,  ']',  '}');
-					newValue= reMap(220,  "\\", '|'); //might need to disable backslash later. 
-					newValue= reMap(221,  ']',  '}');
-					newValue= reMap(192,  '`',  '~');
-					newValue= reMap( 49,  '1',  '!');
-					newValue= reMap( 50,  '2',  '@');    
-					newValue= reMap( 51,  '3',  '#');
-					newValue= reMap( 52,  '4',  '$');
-					newValue= reMap( 53,  '5',  '%');
-					newValue= reMap( 54,  '6',  '^');
-					newValue= reMap( 55,  '7',  '&');
-					newValue= reMap( 56,  '8',  '*');
-					newValue= reMap( 57,  '9',  '(');
-					newValue= reMap( 48,  '0',  ')');
-					newValue= reMap(189,  '-',  '_');
-					newValue= reMap(187,  '=',  '+');
-					if( shiftKey ){
-						newValue = (newValue.toString()).toUpperCase();
-					}else{
-						newValue = (newValue.toString()).toLowerCase();
-					}
-					curText+= newValue.toString(); //unicode.toString();
-				}
-				(puzzlePieceData[myName])['text']=curText;
-			}
-		}
-    /* handler for key up event.. */
-    document.onkeyup = function(e) {
-      var unicode = e.charCode ? e.charCode : e.keyCode
-      var key = getKey(unicode);
-      lastKeyPressed = '';
-      delete kb[key];
-      if (onUpdate) {
-        onUpdate(kb);
-      }
-
-			if( unicode ==16){
-				shiftKey =false; 
-			}
-    }
-    /* function to check the keyboard state.. */
-    function getKey(unicode) {
-      if (unicode_mapping[unicode]) {
-        var key = unicode_mapping[unicode];
-      } else {
-        var key = unicode_mapping[unicode] = String.fromCharCode(unicode);
-      }
-      return key;
-    }
-    return kb;
-  }/* function keyboard_module(onUpdate).. keyboard handler..  */
-
-  /* by default, log which keys are currently down.. */
-  function testing(kb) {
-    console.log('These keys are down: ', kb); //These keys are down:  Object {S: true} //e.g., for S pressed... 
-  }
 
   /* set up the keyboard event handling scheme above.. */
   var keyboard = keyboard_module(testing);
