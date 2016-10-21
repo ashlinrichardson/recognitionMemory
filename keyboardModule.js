@@ -1,4 +1,8 @@
-  function keyboard_module(onUpdate) {
+/* 
+  This was adapted from a short section of code taken from the internet, functionality to respond to different keys differently, and set some local variables, was added.   
+*/
+  
+function keyboard_module(onUpdate) {
     var kb = {};
     var unicode_mapping = {};
     /* handler for key down event.. override automatic key repeats!
