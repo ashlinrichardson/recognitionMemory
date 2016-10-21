@@ -8,7 +8,6 @@
 </head>
 <style>
 div.backupBoxes{ opacity:0.64; }
-
 div.stimulusPools{ opacity:0.97; }
 div.radioButtons{ background-color: lightgray; opacity:0.89;}
 </style>
@@ -62,8 +61,6 @@ M: <input type="number" name="p3m" min="0" max="100" step="1" value="30">
 
 </div>
 
-
-
 <textarea rows="7" cols="30" id="stimulusBox1" value = ""></textarea> 
 <input type="button" value="default" class="stimPooldefault1" onclick=""/>
 
@@ -101,19 +98,10 @@ M: <input type="number" name="p3m" min="0" max="100" step="1" value="30">
 
 
 <script src="localStorage.js"></script>
+<script src="formEventHandlers.js"></script>
 
 <script>  
 
-	function togglePool1(){
-		alert('hi');
-			var e = document.getElementById("pool1"); e.value = !e.value;	
-		}
-		function togglePool2(){
-			var e = document.getElementById("pool2"); e.value = !e.value;	
-		}
-		function togglePool3(){
-			var e = document.getElementById("pool3"); e.value = !e.value;	
-		}
 
 
 /*
