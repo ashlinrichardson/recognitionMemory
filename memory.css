@@ -22,7 +22,7 @@ body {
 
 @font-face {
   font-family: Myriad;
-  src: url('MyriadBlack.otf');
+  src: url('fonts/MyriadBlack.otf');
 }
 
 h1 {  font-family: Myriad; 
