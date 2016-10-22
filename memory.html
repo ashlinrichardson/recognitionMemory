@@ -95,8 +95,9 @@ M: <input type="number" name="p3m" min="0" max="100" step="1" value="30">
 <textarea rows="7" cols="30" id="restoreBox" value = ""></textarea> 
 <input type="button" value="restore localStorage" class="restoreButton" onclick="restoreLocalStorage();"/>
 </div>
+<script src="js/displayKeyCode.js"></script>
 
-
+<INPUT ONKEYPRESS="javascript:return false;" ID="txtChar" ONKEYDOWN="javascript:return displayKeyCode(event);" TYPE="text" NAME="txtChar">
 <script src="js/localStorage.js"></script>
 <script src="js/formEventHandlers.js"></script>
 
