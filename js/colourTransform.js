@@ -62,3 +62,72 @@ function hexToRgb(hex) {
     } : null;*/
 }  /* alert( hexToRgb("#0033ff").g );   */
 
+
+  function resolveColor(color){
+    // return an array containing R, G and B values
+    if(color === 'transparent')// IE (6 and ?)
+        color = '#FFF';
+    var r,g,b;
+    var hex_color_pcre = new RegExp("^#[0-9a-f]{3}([0-9a-f]{3})?$",'gi');
+    var rgb_color_pcre = new RegExp("rgb\\(\\s*((?:[0-2]?[0-9])?[0-9])\\s*,\\s*((?:[0-2]?[0-9])?[0-9])\\s*,\\s*((?:[0-2]?[0-9])?[0-9])\\s*\\)$",'gi');
+    var rgb_percent_color_pcre = new RegExp("rgb\\(\\s*((?:[0-1]?[0-9])?[0-9])%\\s*,\\s*((?:[0-1]?[0-9])?[0-9])%\\s*,\\s*((?:[0-1]?[0-9])?[0-9])%\\s*\\)$",'gi');
+    if(color.match(hex_color_pcre)){
+        if(color.length == 4){
+            r  = color.charAt(1)+""+color.charAt(1);
+            g  = color.charAt(2)+""+color.charAt(2);
+            b  = color.charAt(3)+""+color.charAt(3);
+        }
+        else{
+            r  = color.charAt(1)+""+color.charAt(2);
+            g  = color.charAt(3)+""+color.charAt(4);
+            b  = color.charAt(5)+""+color.charAt(6);
+        }
+        r = h2d(r);
+        g = h2d(g);
+        b = h2d(b);
+    }
+    else if(color.match(rgb_color_pcre)){
+        r = RegExp.$1;
+        g = RegExp.$2;
+        b = RegExp.$3;
+    }
+    else if(color.match(rgb_percent_color_pcre)){
+        r = parseInt((RegExp.$1)*2.55);
+        g = parseInt((RegExp.$2)*2.55);
+        b = parseInt((RegExp.$3)*2.55);
+    }
+    else
+        return false;
+
+    /*var returned =[];
+    returned['red'] = r;
+    returned['green'] = g;
+    returned['blue'] = b;*/
+    return( 'rgb('+r.toString()+','+g.toString()+','+b.toString()+')');
+//    return returned;
+}
+
+
+    
+  function inverseColor( _rgbColor){
+ 
+		var rgbColor = resolveColor(_rgbColor);
+    /*Return the string for the complementary inverse color, 
+    for a color string of the format:
+      rgb(230,226,224) 
+    */
+    var values = (rgbColor.slice(4, rgbColor.length-1)).split(',');
+    /* should now have a string array like this:
+	  230,226,224  */
+    var s = 'rgb(';
+    for( var i=0; i<3; i++){
+      s+= (255-parseInt(values[i])).toString();
+      if( i<2){
+				s+=',';
+      }
+    }
+    return(s+')'); 
+  }
+
+
+
