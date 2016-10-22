@@ -865,7 +865,6 @@ if(progIter>0){
 					}
 				}catch(e){
 				}
-
 				/* Track the starting mouse position for the selection 
 					.. the idea was to use this as an "offset", later. 
 				*/
@@ -911,9 +910,9 @@ if(progIter>0){
       );
   };
 
-  /* this command actually starts the animation-loop:.. */
-  refreshId = setInterval(frame, 88);  //Can reduce this number to decrease latency..  
+
   
 </script>
+<script src="startEventLoop.js"></script>
 </body>
 </html>
