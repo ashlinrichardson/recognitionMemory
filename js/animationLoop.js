@@ -49,17 +49,7 @@ if(progIter>0){
     ctx.lineWidth = 1;
     ctx.strokeStyle = 'black';
     ctx.stroke();
-    
-    /* Image scaling approach for logo (right corner) */
-    /*
-    ctx.save();
-      ctx.globalAlpha = 1.0;
-      var lW = logoImg.width; var lH = logoImg.height;
-      var wf = (w-20)/(5. * lW);
-      ctx.drawImage( logoImg, w-(lW*wf),h-(lH*wf),lW*wf, lH*wf);
-    ctx.restore();
-    */
-    
+        
     drawGrid(w,h);
     drawGridContent();
   
@@ -77,12 +67,7 @@ if(progIter>0){
     /* Total time elapsed since start.. */
     var timeElapsed = Math.ceil(( t1-t0)/1000.);  i += 1;
     if(false){
-      /* print out DOM element names... 
-      
-	 Was looking to see if generally there was a pattern, 
-	  the two methods for exploring the DOM don't seem 
-	  to give the same results. 
-      */
+      /* two methods for exploring the dom don't seem to give the same answers...      */
       var all = document.getElementsByTagName("*");
       for (var i=0, max=all.length; i < max; i++) {
 	// Do something with the element here	
@@ -99,10 +84,7 @@ if(progIter>0){
     
 			if( localStorage.getItem( 'gridContent')==null ){
 				/* break out of the loop if we have cleared localStorage..*/
-				//alert('localStorage not available.');
-				//throw '';
 				console.log('clearInterval.');
-				
 				clearInterval(refreshId);
 				
 			}else{
