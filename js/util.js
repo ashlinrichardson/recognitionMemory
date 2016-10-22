@@ -22,5 +22,13 @@
     }
     return( parts);
   }
+
+  /* Check if a string (or character) is all upper case. */
+  function allUpperCase(s){
+    var ss = s.toString();
+    return( ss == ss.toUpperCase());
+  }
+
+
   
 

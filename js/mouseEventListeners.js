@@ -1,4 +1,20 @@
-  /* Mouse button down event */
+/* function to convert window mouse coordinates to canvas mouse coordinates. */
+
+  function windowToCanvas(canvas, x,y){
+    var bbox = canvas.getBoundingClientRect();
+    return { x:(x-bbox.left)*(canvas.width/bbox.width),
+       y:(y-bbox.top) *(canvas.height/bbox.height)};
+    /*  
+      //Example use of windowToCanvas:  
+        canvas.onmousemove=function(e){
+          var loc = windowToCanvas(canvas, e.clientX, e.clientY);
+        };
+      //End example..
+    */
+  }
+
+
+/* Mouse button down event */
   canvas.addEventListener("mousedown", function(e){  /* e.clientX, e.clientY */
     /* mouse down event listener code... */ 
     var loc = windowToCanvas(canvas, e.clientX, e.clientY);
