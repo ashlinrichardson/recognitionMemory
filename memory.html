@@ -19,8 +19,13 @@ div.radioButtons{ background-color: lightgray; opacity:0.89;}
 Time limit    (mS)   <input type="number" name="isi" min="0" max="10000" step="1000" value="0">
 Time interval (mS) <input type="number" name="set" min="0" max="10000" step="1000" value="0">
 <br>
-N: <input type="number" name="p1n" id="p1n" min="0" max="100" step="1" value="30">
-M: <input type="number" name="p1m" id="p1m" min="0" max="100" step="1" value="30">
+N: <input type="number" name="p1n" id="p1n" min="0" max="100" step="1" value="30" onchange="p1n();">
+M: <input type="number" name="p1m" id="p1m" min="0" max="100" step="1" value="30" onchange="p1m();">
+<script type="text/javascript">
+  function p1n() {	var e = document.getElementById('p1n');	console.log('p1n', e.value); }
+  function p1m() {	var e = document.getElementById('p1m');	console.log('p1m', e.value); }
+</script>
+
 
 <input type="radio" id = "p1on" name = "p1" onchange="p1on();"  checked=false><label for="p1on">pool1 on</label>   
 <input type="radio" id = "p1of" name = "p1" onchange="p1on();"  checked=true><label for="p1of"> off</label>   
@@ -28,7 +33,7 @@ M: <input type="number" name="p1m" id="p1m" min="0" max="100" step="1" value="30
 /* 
 http://viralpatel.net/blogs/dynamic-add-textbox-input-button-radio-element-html-javascript/   
 */
-  function p1on() {	var e = document.getElementById('p1on');	console.log( e.checked); }
+  function p1on() {	var e = document.getElementById('p1on');	console.log('p1on', e.checked); }
 </script>
 
 
@@ -38,10 +43,7 @@ M: <input type="number" name="p2m" min="0" max="100" step="1" value="30">
 <input type="radio" id = "p2on" name = "p2" onchange="p2on();"  checked=false><label for="p2on">pool2 on</label>
 <input type="radio" id = "p2of" name = "p2" onchange="p2on();"  checked=true><label for="p2of"> off</label>
 <script type="text/javascript">
-  function p2on() {
-			var e = document.getElementById('p2on');
-			console.log( e.checked);		
-		}
+  function p2on() { var e = document.getElementById('p2on'); console.log('p2on', e.checked); }
 </script>
 
 N: <input type="number" name="p3n" min="0" max="100" step="1" value="30">
@@ -50,10 +52,7 @@ M: <input type="number" name="p3m" min="0" max="100" step="1" value="30">
 <input type="radio" id = "p3on" name = "p3" onchange="p3on();"  checked=false><label for="p3on">pool3 on</label>
 <input type="radio" id = "p3of" name = "p3" onchange="p3on();"  checked=true><label for="p3of"> off</label>
 <script type="text/javascript">
-  function p3on() {
-			var e = document.getElementById('p3on');
-			console.log( e.checked);		
-		}
+  function p3on() { var e = document.getElementById('p3on'); console.log('p3on',e.checked); }
 </script>
 
 <script src="js/defaultData.js"></script>
