@@ -13,7 +13,6 @@
     */
   }
 
-
 /* Mouse button down event */
   canvas.addEventListener("mousedown", function(e){  /* e.clientX, e.clientY */
     /* mouse down event listener code... */ 
@@ -30,9 +29,21 @@
       if( selectedItem ==cI){
 				/* If the picked item was already selected, unselect it. */
 				selectedItem = '';
+        /* 
+            SAVE FORM INFO TO LOCALSTORAGE, NEED A SAVEFORM() method
+            THEN CLEAR THE FORM
+        */
 			}else{
 				/* If the picked item was not already selected, select it! */
 				selectedItem = cI;
+        /* 
+            LOAD FORM INFO FROM LOCALSTORAGE, NEED A LOADFORM() method
+
+
+
+            ALSO, TRIGGER THE SAVEFORM (WHICH CHECKS FOR SELECTED ITEM).. 
+                INSIDE THE 
+        */
 				try{
 					/* log the colour of the selected item (if something is selected)... */
 					var selectedItemColor = (puzzlePieceData[gridContent[cI]])['color'];

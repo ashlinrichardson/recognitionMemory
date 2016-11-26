@@ -19,7 +19,7 @@ function backupLocalStorage() {
 			}
 			s+= myKey +'þ'+ localStorage.getItem( myKey);;
   }
-  setBackupText(s);//alert(s);
+  setBackupText(s);
 }
 
 

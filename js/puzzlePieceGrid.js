@@ -18,7 +18,6 @@ function makeBeziers(s){
   return ret;
 }
 
-
 function drawUp(transX,transY, reverseDirection, pw){
   //ctx.translate(transX,transY);
   var bSet = makeBeziers(1.*(pw/100.));
@@ -95,7 +94,7 @@ function drawPiece(aTransX,aTransY, /* <-translation offset.. */ pw,ph /* <-puzz
 			
 				So, if the type is to be, TEST-PHASE,
 				
-				we need to confirm
+			  need to confirm
 					1) that there is a STUDY-PHASE unit in the square above... 
 							and
 					2) that we can assign the above STUDY-PHASE id, to the TEST-PHASE....
@@ -146,7 +145,6 @@ function drawPiece(aTransX,aTransY, /* <-translation offset.. */ pw,ph /* <-puzz
 		}
 		//console.log('savedColor', savedColor);
 		if(savedColor ){
-
 			myFillColor=(isSelected==true)?inverseColor(savedColor):savedColor;
 		}
 	} 
@@ -156,15 +154,15 @@ function drawPiece(aTransX,aTransY, /* <-translation offset.. */ pw,ph /* <-puzz
   
   /* draw the picking area.. MAYBE only draw this when the piece is highlighted!!! */
   ctx.beginPath();
-  drawLine(  transX, transY+sizeP+pp,   transX, transY+pp);
-  drawLine(     transX, transY+pp,transX+pw, transY+pp);
-  drawLine(  transX+pw, transY+pp, transX+pw, transY+sizeP+pp);
-  drawLine(  transX+pw, transY+sizeP+pp,transX, transY+sizeP+pp);
+  drawLine(transX, transY+sizeP+pp,   transX, transY+pp);
+  drawLine(transX, transY+pp,transX+pw, transY+pp);
+  drawLine(transX+pw, transY+pp, transX+pw, transY+sizeP+pp);
+  drawLine(transX+pw, transY+sizeP+pp,transX, transY+sizeP+pp);
   ctx.closePath();
   ctx.strokeStyle='green';
   ctx.stroke();
   
-  var fontSize = 11;
+  var fontSize = 12;
   /* Now, draw the text content..  */
   function wrapText(str, startY, isSelected, isBold){  //with some help from ashblue
     var words = str.split(" ");
@@ -178,12 +176,7 @@ function drawPiece(aTransX,aTransY, /* <-translation offset.. */ pw,ph /* <-puzz
     if(isBold){
 			ctx.font = "Bold Italic "+ctx.font;
     }
-    ctx.fillStyle = (isSelected)?invColor:avgColor;
-    try{
-			//ctx.fillStyle = (isSelected)?inverseColor(myFillColor):myFillColor;//invColor:avgColor;//'blue';
-    }catch(e){
-			ctx.fillStyle = (isSelected)?invColor:avgColor;
-    }
+    ctx.fillStyle = inverseColor(myFillColor);// (isSelected)?myFillColor:inverseColor(myFillColor);//:myFillColor;
     for(var j=0; j<words.length; j++){
       lineTest = line + words[j] + ' ';
       if( ctx.measureText(lineTest).width > 100){

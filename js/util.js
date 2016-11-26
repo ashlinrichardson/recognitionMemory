@@ -8,7 +8,6 @@
 		return r
 	}
 
-
   /* convert a string of form:
 	'1,2'
 	
@@ -28,7 +27,4 @@
     var ss = s.toString();
     return( ss == ss.toUpperCase());
   }
-
-
-  
 

@@ -12,9 +12,9 @@ div.stimulusPools{ opacity:0.97; }
 div.radioButtons{ background-color: lightgray; opacity:0.89;}
 </style>
 <body>
+<script src="js/formData.js"></script>
 <canvas id="canvasID" width="800" height="800">Error: HTML5 canvas unupported.</canvas><br>
 <div class="stimulusPools"><br>
-
 <div class="radioButtons" style="width: 800px; "> 
 Time limit    (mS)   <input type="number" name="isi" min="0" max="10000" step="1000" value="0">
 Time interval (mS) <input type="number" name="set" min="0" max="10000" step="1000" value="0">
@@ -22,8 +22,25 @@ Time interval (mS) <input type="number" name="set" min="0" max="10000" step="100
 N: <input type="number" name="p1n" id="p1n" min="0" max="100" step="1" value="30" onchange="p1n();">
 M: <input type="number" name="p1m" id="p1m" min="0" max="100" step="1" value="30" onchange="p1m();">
 <script type="text/javascript">
-  function p1n() {	var e = document.getElementById('p1n');	console.log('p1n', e.value); }
-  function p1m() {	var e = document.getElementById('p1m');	console.log('p1m', e.value); }
+/*
+  STEP ONE IS GOING TO BE TO MAKE THE STATES OF THE BUTTONS ON THIS FORM, PERSISTENT : - ) 
+
+TIME LIMIT
+TIME INTERVAL
+{POOL1, POOL2, POOL3} X : N, M, ON/OFF, TEXT INPUT
+QUESTION: DEFAULT QUESTION, RESPONSE (TYPE/OPTIONS) 
+
+ON SELECT, LOAD THEM... 
+
+ON DESELECT.... UNLOAD THEM.... 
+
+Q: where does the data get stored per tile?
+e.g., the data is stored: 
+(puzzlePieceData[gridContent[cI]])['color']
+
+*/
+  function p1n() {	var e = document.getElementById('p1n');	console.log('p1n', e.value); saveForm(); }
+  function p1m() {	var e = document.getElementById('p1m');	console.log('p1m', e.value); saveForm(); }
 </script>
 
 
@@ -123,6 +140,9 @@ reOffset();
 <script src="js/puzzlePieceGrid.js"></script>
 <script src="js/animationLoop.js"></script>
 <script src="js/mouseEventListeners.js"></script>
-<script src="js/startAnimationLoop.js"></script>
+<script type=text/javascript>
+  /* this command actually starts the animation-loop:.. */
+  refreshId = setInterval(frame, 88);  //Can reduce this number to decrease latency..  
+</script>
 </body>
 </html>
